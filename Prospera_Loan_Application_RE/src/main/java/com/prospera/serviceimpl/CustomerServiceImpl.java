@@ -3,6 +3,9 @@ package com.prospera.serviceimpl;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSendException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import com.prospera.model.Customer;
@@ -16,6 +19,9 @@ public class CustomerServiceImpl implements CustomerServiceI
 
 	@Autowired
 	CustomerRepository cr;
+	
+	@Autowired
+	private JavaMailSender sender;
 	
 	@Override
 	public void saveData(Enquiry e, Customer c)
@@ -46,6 +52,19 @@ public class CustomerServiceImpl implements CustomerServiceI
 		c.setPancardNo(e.getPancardNo());
 		
 		cr.save(c);
+		  try
+		  {
+		 SimpleMailMessage message=new SimpleMailMessage(); 
+		 message.setTo(c.getEmail());
+		 message.setSubject("Congrarulations "+ c.getFirstName());
+		 message.setText("Your Registration completed successfully \n "+" Thanks for showing your interest and registering at Prospera  ");
+		 sender.send(message);
+		  }
+		  catch(MailSendException exception)
+		  {
+			     exception.getMessage(); 
+		  }
 	}
 
+	
 }
