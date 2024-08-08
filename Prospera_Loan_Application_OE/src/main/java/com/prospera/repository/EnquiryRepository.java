@@ -12,9 +12,13 @@ import com.prospera.model.Enquiry;
 public interface EnquiryRepository extends JpaRepository<Enquiry, Integer>
 {
 
-	List<Enquiry> findAllByEnquiryStatus(String string);
+	
 
 	Enquiry findByEnquiryIDAndEnquiryStatus(int enquiryID, String string);
+
+	List<Enquiry> findAllByLoanStatus(String string);
+
+	List<Enquiry> findAllByEnquiryStatus(String string);
 
 
 

@@ -26,18 +26,7 @@ public class GlobalExceptionHandler
 		return new ResponseEntity<ApiError>(error,HttpStatus.NOT_FOUND);
 	}
 	
-	@ExceptionHandler(value = CibilScoreNotGeneratedException.class)
-	public ResponseEntity<ApiError> checkloanStatusForOE(CibilScoreNotGeneratedException e , HttpServletRequest request)
-	{
-		ApiError error = new ApiError();
-		error.setMessage(e.getMessage());
-		error.setPath(request.getRequestURI());
-		error.setStatusMessage(HttpStatus.NOT_FOUND);
-		error.setStatusCode(HttpStatus.NOT_FOUND.value());
-		error.setTimeStamp(new Date());
-	
-        return new ResponseEntity<ApiError>(error,HttpStatus.NOT_FOUND);
-	}
+
 	
 	
 	@ExceptionHandler(value = CibilScoreRejectedException.class)
@@ -52,16 +41,6 @@ public class GlobalExceptionHandler
 		return new ResponseEntity<ApiError>(error,HttpStatus.NOT_ACCEPTABLE);
 	}
 	
-	@ExceptionHandler(value = IdNotPresentinDatabaseException.class)
-	public ResponseEntity<ApiError> forwardtoReForOe(IdNotPresentinDatabaseException e , HttpServletRequest request)
-	{
-		ApiError error = new ApiError();
-		error.setMessage(e.getMessage());
-		error.setPath(request.getRequestURI());
-		error.setStatusMessage(HttpStatus.NOT_FOUND);
-		error.setStatusCode(HttpStatus.NOT_FOUND.value());
-		error.setTimeStamp(new Date());
-		return new ResponseEntity<ApiError>(error,HttpStatus.NOT_FOUND);
-	}
+
 	
 }
