@@ -13,11 +13,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import com.prospera.exception.CibilScoreNotGeneratedException;
 import com.prospera.exception.CibilScoreRejectedException;
-import com.prospera.exception.IdNotPresentinDatabaseException;
 import com.prospera.exception.InvalidIdException;
-
 import com.prospera.model.Cibil;
 import com.prospera.model.Enquiry;
 import com.prospera.repository.CibilRepository;
@@ -42,7 +39,7 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 		Enquiry en =er.findByEnquiryIDAndEnquiryStatus(enquiryID, "Forwarded to OE");
 		if(en==null)
 		{
-			throw new InvalidIdException("You have entered an invalid enquiry ID");
+			throw new InvalidIdException("invalid enquiry");
 		}
 		else
 		{
@@ -103,7 +100,7 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 	@Override
 	public ResponseEntity<List<Enquiry>> getAllCibilApproved() 
 	{
-	     List<Enquiry> l= er.findAllByEnquiryStatus("Cibil check cleared");
+	     List<Enquiry> l= er.findAllByLoanStatus("Cibil Approved");
 	     ResponseEntity<List<Enquiry>> response=new ResponseEntity<>(l,HttpStatus.OK);
 		return response;
 	}
@@ -115,17 +112,21 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 		Optional<Enquiry> o = er.findById(enquiryID);
 		if(!(o.isPresent()))
 		{
-			throw new IdNotPresentinDatabaseException("Id not present in database"); 
+			throw new InvalidIdException("Enquiry not present in database"); 
 		}
 		else 
 		{
 			if(o.get().getLoanStatus().equals("Pending"))
 			{
-				throw new CibilScoreNotGeneratedException("Cibil score not yet generated please generate cibil score");
+				throw new InvalidIdException("Cibil score not yet generated please generate cibil score");
 			}
 			else if(o.get().getLoanStatus().equals("Cibil Rejected"))
 			{
 				throw new CibilScoreRejectedException("Cibil score has been rejected");
+			}
+			else if(o.get().getEnquiryStatus().equals("Registration Completed"))
+			{
+				throw new InvalidIdException("Registration already completed");
 			}
 			else 
 			{
