@@ -75,7 +75,7 @@ public class EnquiryServiceImpl implements EnquiryServiceI{
 		}
 		else
 		{
-			throw new EnquiryIdNotFoundException("Id not found");
+			throw new EnquiryIdNotFoundException("Enquiry not found");
 		}
     }
 
@@ -136,7 +136,7 @@ public class EnquiryServiceImpl implements EnquiryServiceI{
 		}
 		else
 		{
-			throw new EnquiryIdNotFoundException("Id not found");
+			throw new EnquiryIdNotFoundException("Enquiry not found");
 		}	
 	}
 	
@@ -166,7 +166,7 @@ public class EnquiryServiceImpl implements EnquiryServiceI{
 		}
 		else
 		{
-			throw new CannotForwardToOEException("This Id cannot be forwarded to OE");
+			throw new CannotForwardToOEException("Enquiry cannot be forwarded to OE");
 		}
 	}
 
