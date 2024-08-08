@@ -3,7 +3,6 @@ package com.prospera.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,6 +47,18 @@ public class OEController
 	public ResponseEntity<String> forwardToRE(@PathVariable("enquiryID") int enquiryID)
 	{
 		ResponseEntity<String> e = esi.forwardToRE(enquiryID);
+		return e;
+	}
+	@GetMapping("/getforwardtoreVerificationPending")
+	public ResponseEntity<List<Enquiry>> getforwardtoreVerificationPending()
+	{
+		ResponseEntity<List<Enquiry>> response = esi.getAllVerificationPending();
+		return response;
+	}
+	@GetMapping("/getDocVerification/{cid}/{loanStatus}")
+	ResponseEntity<String> getVerification(@PathVariable("cid") int cid,@PathVariable("loanStatus")String loanStatus)
+	{
+		ResponseEntity<String> e = esi.getVerification(cid,loanStatus);
 		return e;
 	}
 }
