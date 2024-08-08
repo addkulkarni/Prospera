@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
+
 import lombok.Data;
 
 @Data
@@ -19,7 +20,7 @@ public class Bank
   private String branch;
   @NotBlank(message="IFSCode cannot be blank")
   private String ifscCode;
-  @NotBlank(message="Account number cannot be blank")
+//  @NotEmpty(message="Account number cannot be blank")
   private long accNo;
   private String accType;
   
