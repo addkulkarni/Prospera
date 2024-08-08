@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.prospera.exception.CibilScoreNotGeneratedException;
 import com.prospera.exception.CibilScoreRejectedException;
+import com.prospera.exception.IdNotPresentinDatabaseException;
 import com.prospera.exception.InvalidIdException;
 
 import com.prospera.model.Cibil;
@@ -100,7 +101,8 @@ public class EnquiryServiceImpl implements EnquiryServiceI
     }
 
 	@Override
-	public ResponseEntity<List<Enquiry>> getAllCibilApproved() {
+	public ResponseEntity<List<Enquiry>> getAllCibilApproved() 
+	{
 	     List<Enquiry> l= er.findAllByEnquiryStatus("Cibil check cleared");
 	     ResponseEntity<List<Enquiry>> response=new ResponseEntity<>(l,HttpStatus.OK);
 		return response;
@@ -108,20 +110,31 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 
 	@Override
 	public ResponseEntity<String> forwardToRE(int enquiryID)  {
-		Enquiry e = er.findById(enquiryID).get();
-		e.setEnquiryStatus("Pending Registration");
-		if(e.getLoanStatus().equals("Pending"))
+//		Enquiry e = er.findById(enquiryID).get();
+		
+		Optional<Enquiry> o = er.findById(enquiryID);
+		if(!(o.isPresent()))
 		{
-			 throw new CibilScoreNotGeneratedException("Cibil score not yet generated please generate cibil score");
+			throw new IdNotPresentinDatabaseException("Id not present in database"); 
 		}
-		else if(e.getLoanStatus().equals("Cibil Rejected"))
+		else 
 		{
-			throw new CibilScoreRejectedException("Cibil score has been rejected");
-		}
-		else  {
-			er.save(e);
-			ResponseEntity<String> response = new ResponseEntity<String>("Enquiry forwarded to RE", HttpStatus.OK);
-			return response;	
+			if(o.get().getLoanStatus().equals("Pending"))
+			{
+				throw new CibilScoreNotGeneratedException("Cibil score not yet generated please generate cibil score");
+			}
+			else if(o.get().getLoanStatus().equals("Cibil Rejected"))
+			{
+				throw new CibilScoreRejectedException("Cibil score has been rejected");
+			}
+			else 
+			{
+				
+				er.save(o.get());
+				o.get().setEnquiryStatus("Pending Registration");
+				ResponseEntity<String> response = new ResponseEntity<String>("Enquiry forwarded to RE", HttpStatus.OK);
+				return response;
+			}			
 	        
 		}
 		
