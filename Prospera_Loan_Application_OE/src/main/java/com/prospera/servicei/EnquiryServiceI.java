@@ -17,6 +17,10 @@ public interface EnquiryServiceI
 
 	ResponseEntity<String> forwardToRE(int enquiryID);
 
+	ResponseEntity<String> getVerification(int cid, String loanStatus);
+
+	ResponseEntity<List<Enquiry>> getAllVerificationPending();
+
 
 	
 	
