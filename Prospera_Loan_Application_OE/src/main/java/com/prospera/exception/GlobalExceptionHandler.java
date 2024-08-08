@@ -43,16 +43,6 @@ public class GlobalExceptionHandler
 	
 
 	
-	@ExceptionHandler(value = IdNotPresentinDatabaseException.class)
-	public ApiError forwardtoReForOe(IdNotPresentinDatabaseException e , HttpServletRequest request)
-	{
-		ApiError error = new ApiError();
-		error.setMessage(e.getMessage());
-		error.setPath(request.getRequestURI());
-		error.setStatusMessage(HttpStatus.NOT_FOUND);
-		error.setStatusCode(HttpStatus.NOT_FOUND.value());
-		error.setTimeStamp(new Date());
-		return error;
-	}
+
 	
 }
