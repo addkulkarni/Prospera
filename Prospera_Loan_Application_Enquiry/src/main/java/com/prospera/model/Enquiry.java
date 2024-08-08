@@ -43,6 +43,8 @@ public class Enquiry
 	private String gender;
 	private	Date timeStamp;
 	private String loanStatus;
+	private double loanamount;
+	private int tenure;
 	private String enquiryStatus;
 	@OneToOne(cascade = CascadeType.ALL)
 	private Cibil cibil;
