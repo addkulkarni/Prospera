@@ -1,5 +1,7 @@
 package com.prospera.serviceimpl;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +16,9 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 	EnquiryRepository er;
 	
 	@Override
-	public Enquiry getEnquiry(int eid)
+	public Optional<Enquiry> getEnquiry(int eid)
 	{
-		Enquiry e = er.findById(eid).get();
+		Optional<Enquiry> e = er.findById(eid);
 		return e;
 	}
 

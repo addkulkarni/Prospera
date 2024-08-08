@@ -1,5 +1,7 @@
 package com.prospera.controller;
 
+import java.util.Optional;
+
 import javax.print.attribute.standard.Media;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,20 +47,27 @@ public class HomeController
 		d.setSalarySlip(salarySlip.getBytes());
 		d.setSign(sign.getBytes());
 		int eid = c.getEnquiry().getEnquiryID();
-		Enquiry e = esi.getEnquiry(eid);
-		
-		if(!(e.getEnquiryStatus().equals("Pending Registration")))
+		Optional<Enquiry> o = esi.getEnquiry(eid);
+		if(!(o.isPresent()))
 		{
-			throw new InvalidEnquiryIDException("Registration for this enquiry ID is not allowed as its cibil score is either not generated or rejected");
+			throw new InvalidEnquiryIDException("Invalid Enquiry");
 		}
 		else
-		{
-			c.setDoc(d);
-			c.setEnquiry(e);
-			csi.saveData(e,c);
-			esi.setEnquiryStatus(eid);
-			ResponseEntity<String> response = new ResponseEntity<>("Data saved succcesfully", HttpStatus.OK);
-			return response;
+		{	
+			if(!(o.get().getEnquiryStatus().equals("Pending Registration")))
+			{
+				throw new InvalidEnquiryIDException("Registration for this enquiry ID is not allowed as its cibil score is either not generated or rejected");
+			}
+			
+			else
+			{
+				c.setDoc(d);
+				c.setEnquiry(o.get());
+				csi.saveData(o.get(),c);
+				esi.setEnquiryStatus(eid);
+				ResponseEntity<String> response = new ResponseEntity<>("Data saved succcesfully", HttpStatus.OK);
+				return response;
+			}
 		}
 	}
 }	
