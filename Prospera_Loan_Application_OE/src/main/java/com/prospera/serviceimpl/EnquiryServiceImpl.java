@@ -29,8 +29,11 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 	@Autowired
 	EnquiryRepository er;
 	
+//	@Autowired
+	//CibilRepository cr;
+	
 	@Autowired
-	CibilRepository cr;
+	CustomerRepository cmr;
 	
 	@Autowired
 	CustomerRepository cmr;
@@ -115,15 +118,14 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 //		Enquiry e = er.findById(enquiryID).get();
 		
 		Optional<Enquiry> o = er.findById(enquiryID);
-		if(!(o.isPresent()))
-		{
-			throw new InvalidIdException("Enquiry not present in database"); 
-		}
-		else 
-		{
-			if(o.get().getLoanStatus().equals("Pending"))
+		
+			
+			if(o.get().getLoanStatus().equals("Cibil Approved")&& o.get().getEnquiryStatus().equals("Cibil Check Cleared"))
 			{
-				throw new InvalidIdException("Cibil score not yet generated please generate cibil score");
+				o.get().setEnquiryStatus("Pending Registration");
+				er.save(o.get());
+				ResponseEntity<String> response = new ResponseEntity<String>("Enquiry forwarded to RE", HttpStatus.OK);
+				return response;
 			}
 			else if(o.get().getLoanStatus().equals("Cibil Rejected"))
 			{
@@ -135,17 +137,101 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 			}
 			else 
 			{
-				o.get().setEnquiryStatus("Pending Registration");
-				er.save(o.get());
-				ResponseEntity<String> response = new ResponseEntity<String>("Enquiry forwarded to RE", HttpStatus.OK);
-				return response;
+
+				throw new InvalidIdException("Invalid Enquiry");
+					
+
 			}			
-	        
+			
 		}
 		
+
+	@Override
+	public ResponseEntity<String> forwardToCm(int cid) {
+		Optional<Customer> o = cmr.findById(cid);
+		
+		if(o.get().getEnquiry().getEnquiryStatus().equals("Verification Completed")&& o.get().getEnquiry().getLoanStatus().equals("Verification Completed"))
+		{
+			o.get().getEnquiry().setEnquiryStatus("Pending Sanction");
+			cmr.save(o.get());
+			ResponseEntity<String> response = new ResponseEntity<String>("Enquiry forwarded to CM", HttpStatus.OK);
+			return response;
+		}
+		else if(o.get().getEnquiry().getEnquiryStatus().equals("Verification Completed"))
+		{
+			throw new InvalidIdException("Verification already completed");
+		}
+		else 
+		{
+			throw new InvalidIdException("Invalid Enquiry");
+				
+		}			
+		
+	}
+     	
+
+	
+	@Override
+	public ResponseEntity<List<Customer>> getAllVerificationPending() 
+	{
+//		cmr.fin
+//    	List<Customer> c = cmr.findByEnquiryStatus("hhh");
+	     ResponseEntity<List<Customer>> response=new ResponseEntity<>(HttpStatus.OK);
+		 return response;
 	}
 
 	@Override
+
+	public ResponseEntity<String> getVerification(int enquiryID, String loanStatus) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+//	@Override
+//	public ResponseEntity<String> getVerification(int cid, String loanStatus) 
+//	{
+//		Optional<Customer> o = cmr.findById(cid);
+//		if(!(o.isPresent()))
+//		{
+//			throw new InvalidIdException("Enquiry not present in database"); 
+//		}
+//		else
+//		{
+//			if(!(o.get().getDoc()==null) && o.get().getEnquiry().getLoanStatus().equals("Cibil Approved"))
+//			{
+//				o.get().getEnquiry().setEnquiryStatus("Doc Accepted");
+//			}
+//			else
+//			{
+//				o.get().getEnquiry().setEnquiryStatus("Doc Rejected");
+//			}
+//		}
+//		cmr.save(o.get());
+//		ResponseEntity<String> response = new ResponseEntity<String>("Document Verified", HttpStatus.OK);
+//		try
+//		{
+//			SimpleMailMessage message=new SimpleMailMessage();
+//			if(o.get().getEnquiry().getEnquiryStatus().equals("Doc Accepted"))
+//			{
+//				message.setTo(o.get().getEmail());
+//				message.setSubject("Congratulations " + o.get().getFirstName());
+//				message.setText("Your Document Verification Accepted");
+//			}
+//			else
+//			{
+//				message.setTo(o.get().getEmail());
+//				message.setSubject("Sorry " + o.get().getFirstName());
+//				message.setText("Your Document Verification Rejected");
+//			}
+//		    sender.send(message);
+//		}
+//		catch(MailException exception)
+//		{
+//			System.out.println("email is incorrect");
+//		}
+//		return response;
+//		
+//	}
+
 	public ResponseEntity<List<Enquiry>> getAllVerificationPending() 
 	{
 		 List<Enquiry> l= er.findAllByEnquiryStatus("Pending Verification");
@@ -198,6 +284,7 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 		return response;
 		
 	}
+
 
 	
 }
