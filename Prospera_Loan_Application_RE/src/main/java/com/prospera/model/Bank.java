@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 import lombok.Data;
@@ -20,7 +22,8 @@ public class Bank
   private String branch;
   @NotBlank(message="IFSCode cannot be blank")
   private String ifscCode;
-//  @NotEmpty(message="Account number cannot be blank")
+  @Min(value = 100000000, message="Account number cannot be less than 9 digits")
+  @Max(value = 9999999999l, message="Account number cannot be more than 10 digits")
   private long accNo;
   private String accType;
   

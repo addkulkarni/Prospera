@@ -19,6 +19,7 @@ import com.prospera.model.Bank;
 import com.prospera.model.Customer;
 import com.prospera.model.Document;
 import com.prospera.model.Employment;
+import com.prospera.model.Enquiry;
 import com.prospera.servicei.CustomerServiceI;
 
 @RestController
@@ -86,15 +87,15 @@ public class HomeController
 		return response;
 	}
 	
-	@PutMapping(value="updatecustomer/{username}", consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<String> updateCustomer(@PathVariable("username")String username,
-			@RequestPart("data") String data, 
-			@RequestPart("adhar")MultipartFile adhar, 
-			@RequestPart("pan")MultipartFile pan, 
-			@RequestPart("photo")MultipartFile photo, 
-			@RequestPart("sign")MultipartFile sign, 
-			@RequestPart("incomeCertificate")MultipartFile incomeCertificate, 
-			@RequestPart("salarySlip")MultipartFile salarySlip) throws Exception
+	@PutMapping(value="updatecustomer/{cid}", consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<String> savedata(@PathVariable("cid") int cid,
+	@RequestPart("data") String data, 
+	@RequestPart("adhar")MultipartFile adhar, 
+	@RequestPart("pan")MultipartFile pan, 
+	@RequestPart("photo")MultipartFile photo, 
+	@RequestPart("sign")MultipartFile sign, 
+	@RequestPart("incomeCertificate")MultipartFile incomeCertificate, 
+	@RequestPart("salarySlip")MultipartFile salarySlip) throws Exception
 	{
 		ObjectMapper om = new ObjectMapper();
 		Customer c = om.readValue(data, Customer.class);
@@ -106,8 +107,10 @@ public class HomeController
 		d.setSalarySlip(salarySlip.getBytes());
 		d.setSign(sign.getBytes());
 		c.setDoc(d);
-		csi.updateData(username,c);
-		ResponseEntity<String> response = new ResponseEntity<>("Update successful",HttpStatus.OK);
+		Enquiry e = c.getEnquiry();
+		c.setEnquiry(e);
+		csi.saveData(c);
+		ResponseEntity<String> response = new ResponseEntity<>("Data saved succcesfully", HttpStatus.OK);
 		return response;
 	}
 }

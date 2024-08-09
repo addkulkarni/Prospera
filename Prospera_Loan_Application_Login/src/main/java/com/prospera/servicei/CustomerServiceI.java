@@ -32,4 +32,6 @@ public interface CustomerServiceI
 
 	ResponseEntity<Customer> getPersonalDetails(String username, String password);
 
+	void saveData(Customer c);
+
 }

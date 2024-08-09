@@ -189,4 +189,10 @@ public class CustomerServiceImpl implements CustomerServiceI
 			return response;
 		}
 	}
+
+	@Override
+	public void saveData(Customer c)
+	{
+		cr.save(c);
+	}
 }
