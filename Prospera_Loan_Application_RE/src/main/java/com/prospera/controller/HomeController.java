@@ -71,26 +71,26 @@ public class HomeController
 				ResponseEntity<String> response = new ResponseEntity<>("Data saved succcesfully", HttpStatus.OK);
 				return response;
 			}
-		}
-		
+		}	
 	}
-		@PostMapping("/ForwardForVerification/{enquiryID}")
-		public ResponseEntity<String> forwardforverification(@PathVariable("enquiryID") int enquiryID)
-		{
-			
-			
-			ResponseEntity<String> response= esi.forwardforverification(enquiryID);
-			return response;
-			
-		}
+	@PostMapping("/ForwardForVerification/{enquiryID}")
+	public ResponseEntity<String> forwardforverification(@PathVariable("enquiryID") int enquiryID)
+	{	
+		ResponseEntity<String> response= esi.forwardforverification(enquiryID);
+		return response;		
+	}
 		
-		@GetMapping("/getAllPendingRegistration")
-		public ResponseEntity<List<Enquiry>> getAllPendingRegistration()
-		{
-			ResponseEntity<List<Enquiry>> response=esi.getAllPendingRegistration();
-			return response;
-			
-		}
+	@GetMapping("/getAllPendingRegistration")
+	public ResponseEntity<List<Enquiry>> getAllPendingRegistration()
+	{
+		ResponseEntity<List<Enquiry>> response=esi.getAllPendingRegistration();
+		return response;	
+	}
 		
-	
+	@GetMapping("getallRegistrationCompleted")
+	public ResponseEntity<List<Enquiry>> getAllRegistrationCompleted()
+	{
+		ResponseEntity<List<Enquiry>> response=esi.getAllRegistrationComplete();
+		return response;
+	}
 }	
