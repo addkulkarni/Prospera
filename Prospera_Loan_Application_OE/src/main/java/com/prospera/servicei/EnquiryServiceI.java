@@ -18,18 +18,16 @@ public interface EnquiryServiceI
 
 	ResponseEntity<String> forwardToRE(int enquiryID);
 
+
 //	ResponseEntity<String> getVerification(int cid, String loanStatus);
 	
-	ResponseEntity<String> getVerification(int enquiryID, String loanStatus);
+//	ResponseEntity<String> getVerification(int enquiryID, String loanStatus);
 	
 	ResponseEntity<List<Customer>> getAllVerificationPending();
 
 	ResponseEntity<String> forwardToCm(int cid);
 
+	ResponseEntity<String> getVerification(int cid, String loanStatus);
 
-	
-	
-	
-	
-
+//	ResponseEntity<List<Enquiry>> getAllVerificationPending();
 }

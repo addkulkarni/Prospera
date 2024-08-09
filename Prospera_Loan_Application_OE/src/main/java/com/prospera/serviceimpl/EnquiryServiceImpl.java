@@ -36,6 +36,9 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 	CustomerRepository cmr;
 	
 	@Autowired
+	CustomerRepository cmr;
+	
+	@Autowired
 	private JavaMailSender sender;
 	
 	@Override
@@ -134,8 +137,10 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 			}
 			else 
 			{
+
 				throw new InvalidIdException("Invalid Enquiry");
 					
+
 			}			
 			
 		}
@@ -176,6 +181,7 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 	}
 
 	@Override
+
 	public ResponseEntity<String> getVerification(int enquiryID, String loanStatus) {
 		// TODO Auto-generated method stub
 		return null;
@@ -225,6 +231,60 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 //		return response;
 //		
 //	}
+
+	public ResponseEntity<List<Enquiry>> getAllVerificationPending() 
+	{
+		 List<Enquiry> l= er.findAllByEnquiryStatus("Pending Verification");
+	     ResponseEntity<List<Enquiry>> response=new ResponseEntity<>(l,HttpStatus.OK);
+		 return response;
+	}
+
+	@Override
+	public ResponseEntity<String> getVerification(int cid, String loanStatus) 
+	{
+		Optional<Customer> o = cmr.findById(cid);
+		if(!(o.isPresent()))
+		{
+			throw new InvalidIdException("Enquiry not present in database"); 
+		}
+		else
+		{
+			if(!(o.get().getDoc()==null) && o.get().getEnquiry().getLoanStatus().equals("Cibil Approved"))
+			{
+				o.get().getEnquiry().setEnquiryStatus("Doc Accepted");
+			}
+			else
+			{
+				o.get().getEnquiry().setEnquiryStatus("Doc Rejected");
+			}
+		}
+		cmr.save(o.get());
+		ResponseEntity<String> response = new ResponseEntity<String>("Document Verified", HttpStatus.OK);
+		try
+		{
+			SimpleMailMessage message=new SimpleMailMessage();
+			if(o.get().getEnquiry().getEnquiryStatus().equals("Doc Accepted"))
+			{
+				message.setTo(o.get().getEmail());
+				message.setSubject("Congratulations " + o.get().getFirstName());
+				message.setText("Your Document Verification Accepted");
+			}
+			else
+			{
+				message.setTo(o.get().getEmail());
+				message.setSubject("Sorry " + o.get().getFirstName());
+				message.setText("Your Document Verification Rejected");
+			}
+		    sender.send(message);
+		}
+		catch(MailException exception)
+		{
+			System.out.println("email is incorrect");
+		}
+		return response;
+		
+	}
+
 
 	
 }

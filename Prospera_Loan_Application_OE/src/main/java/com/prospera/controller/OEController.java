@@ -50,6 +50,7 @@ public class OEController
 		ResponseEntity<String> e = esi.forwardToRE(enquiryID);
 		return e;
 	}
+
 	
 	@GetMapping("/forwardtoCM/{cid}")
 	public ResponseEntity<String> forwardToCm(@PathVariable("cid") int cid)
@@ -71,5 +72,4 @@ public class OEController
 		ResponseEntity<String> e = esi.getVerification(enquiryID,loanStatus);
 		return e;
 	}
-	
 }

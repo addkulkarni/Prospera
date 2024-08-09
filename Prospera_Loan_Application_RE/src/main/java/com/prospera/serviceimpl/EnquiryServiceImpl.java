@@ -40,29 +40,15 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 	}
 
 	@Override
-	public ResponseEntity<String> forwardforverification(int enquiryID) {
-		
-	    Optional<Enquiry> e= er.findById(enquiryID);
-	      if(!(e.isPresent()))
-	      {
-	    	  throw new  InvalidEnquiryIDException("Invalid Enquiry");
-	      }
-	      else
-	      {
-	    	  if(e.get().getLoanStatus().equals("Cibil Rejected"))
-	    	  {
-	    		  throw new InvalidEnquiryIDException("cibil score has been rejected");
-	    	  }
-	    	  else if( e.get().getEnquiryStatus().equals("Pending Registration"))
-	    	  {
-	    		  throw new InvalidEnquiryIDException("Registration is pending");
-	    	  }
-	    	  else
-	    	  {
-	    		  e.get().setEnquiryStatus("Pending Verification");
-	    		  er.save(e.get());
-	    		  ResponseEntity<String> response=new ResponseEntity<String>(" Enquiry forwarded to OE for document verification ",HttpStatus.OK);
-	    		  
+	public ResponseEntity<String> forwardforverification(int enquiryID)
+	{
+		Optional<Enquiry> e= er.findById(enquiryID);
+	     
+	    	if(e.get().getEnquiryStatus().equals("Registration Completed") && e.get().getLoanStatus().equals("Cibil Approved"))
+	    	{
+	    		e.get().setEnquiryStatus("Pending Verification");
+	    		er.save(e.get());
+	    		ResponseEntity<String> response=new ResponseEntity<String>(" Enquiry forwarded to OE for document verification ",HttpStatus.OK);
 	    		  try
 	    		  {
 	    			  SimpleMailMessage message=new SimpleMailMessage();
@@ -73,14 +59,23 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 	    		  }
 	    		  catch(MailSendException Exception)
 	    		  {
-	    			  Exception.toString();
-	    			  System.out.println("Mail is incorrect");
+	    			 System.out.println("Mail is incorrect");
 	    		  }
 	    		  return response;
+	    	}  
+	    	 else if(e.get().getLoanStatus().equals("Cibil Rejected"))
+	    	  {
+	    		  throw new InvalidEnquiryIDException("cibil score has been rejected");
 	    	  }
-	      }
-	}
-
+	    	  else if( e.get().getEnquiryStatus().equals("Pending Registration"))
+	    	  {
+	    		  throw new InvalidEnquiryIDException("Registration is pending");
+	    	  }
+	    	  else
+	    	  {
+	    		  throw new  InvalidEnquiryIDException("Invalid Enquiry");
+	    	  }
+	 }
 	@Override
 	public ResponseEntity<List<Enquiry>> getAllPendingRegistration() {
 		List<Enquiry> l= er.findByEnquiryStatus("Pending Registration"); 
@@ -88,5 +83,11 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 		return response;
 	}
 
-	
+	@Override
+	public ResponseEntity<List<Enquiry>> getAllRegistrationComplete()
+	{
+		List<Enquiry> l= er.findByEnquiryStatus("Registration Completed"); 
+		ResponseEntity<List<Enquiry>> response=new ResponseEntity<>(l,HttpStatus.OK);
+		return response;
+	}
 }

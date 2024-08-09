@@ -17,6 +17,8 @@ public interface EnquiryServiceI
 
 	ResponseEntity<List<Enquiry>> getAllPendingRegistration();
 
+	ResponseEntity<List<Enquiry>> getAllRegistrationComplete();
+
 	
 }
 
