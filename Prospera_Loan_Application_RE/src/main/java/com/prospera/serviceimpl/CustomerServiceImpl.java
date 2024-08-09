@@ -57,7 +57,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 		 SimpleMailMessage message=new SimpleMailMessage(); 
 		 message.setTo(c.getEmail());
 		 message.setSubject("Congrarulations "+ c.getFirstName());
-		 message.setText("Your Registration completed successfully \n "+" Thanks for showing your interest and registering at Prospera  ");
+		 message.setText("Your Registration completed successfully \n "+"Thanks for showing your interest and registering at Prospera.\nBelow are your username and password for logging into your loan portal and getting updates.\nUsername: "+username+"\nPassword: "+password);
 		 sender.send(message);
 		  }
 		  catch(MailSendException exception)
