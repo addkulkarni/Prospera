@@ -3,6 +3,7 @@ package com.prospera.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.prospera.model.Customer;
 import com.prospera.model.Enquiry;
+import com.prospera.servicei.CustomerServiceI;
 import com.prospera.servicei.EnquiryServiceI;
 
 
@@ -21,6 +23,9 @@ public class OEController
 	
 	@Autowired
 	EnquiryServiceI esi;
+	
+	@Autowired
+	CustomerServiceI csi;
 	
 	@GetMapping("/cibilscore/{enquiryID}")
 	public ResponseEntity<String> calculateCibil(@PathVariable("enquiryID")int enquiryID)
@@ -59,17 +64,18 @@ public class OEController
 		return e;
 	}
 	
-	@GetMapping("/getforwardedtoVerificationPending")
+	@GetMapping("/getVerificationPending")
 	public ResponseEntity<List<Customer>> getforwardtoreVerificationPending()
 	{
-		ResponseEntity<List<Customer>> response = esi.getAllVerificationPending();
+		List<Customer> l = csi.getAllVerificationPending();
+		ResponseEntity<List<Customer>> response = new ResponseEntity<>(l,HttpStatus.OK);
 		return response;
 	}
 
-	@GetMapping("/getDocVerification/{enquiryID}/{loanStatus}")
-	ResponseEntity<String> getVerification(@PathVariable("enquiryID") int enquiryID,@PathVariable("loanStatus")String loanStatus)
+	@GetMapping("/documentverification/{cid}/{loanStatus}")
+	ResponseEntity<String> getVerification(@PathVariable("cid") int cid, @PathVariable("loanStatus")String loanStatus)
 	{
-		ResponseEntity<String> e = esi.getVerification(enquiryID,loanStatus);
+		ResponseEntity<String> e = csi.getVerification(cid,loanStatus);
 		return e;
 	}
 }

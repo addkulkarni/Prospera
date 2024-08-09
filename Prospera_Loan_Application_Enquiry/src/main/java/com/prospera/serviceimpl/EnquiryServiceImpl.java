@@ -53,8 +53,8 @@ public class EnquiryServiceImpl implements EnquiryServiceI{
 		{
 		  SimpleMailMessage message=new SimpleMailMessage();
 		  message.setTo(e.getEmail());
-		  message.setSubject("Welcome "+ e.getFirstName());
-		  message.setText("Hello "+ e.getFirstName()+",\nWe are pleased to know about your interest in Prospera Loans.");
+		  message.setSubject("Welcome to Prospera Finance");
+		  message.setText("Hello "+ e.getFirstName()+",\nWe are pleased to know about your interest in Prospera Loans. We will keep you posted throughout the loan process.\nHave a nice day.\nTeam Prospera Finance");
 		  sender.send(message);
 		}
 		catch(MailException exception)
@@ -153,8 +153,8 @@ public class EnquiryServiceImpl implements EnquiryServiceI{
 			{
 				SimpleMailMessage message=new SimpleMailMessage();
 				message.setTo(e.getEmail());
-				message.setSubject("Congratulations "+ e.getFirstName());
-				message.setText("Hello "+ e.getFirstName()+ " Your Enquiry forworded to OE ");
+				message.setSubject("Loan Enquiry Status Update");
+				message.setText("Hello "+ e.getFirstName()+ ",\nYour Enquiry has been forworded to Operational Executive for CIBIL score check.\nWe will contact you via email as soon as we have your CIBIL score with us.\nHave a nice day.\nTeam Prospera Finance");
 				sender.send(message);
 			}
 			catch(MailException exception)

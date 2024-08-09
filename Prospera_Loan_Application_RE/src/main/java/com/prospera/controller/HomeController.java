@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +24,7 @@ import com.prospera.servicei.CustomerServiceI;
 import com.prospera.servicei.EnquiryServiceI;
 
 @RestController
+@RequestMapping("re")
 public class HomeController
 {
 	@Autowired
@@ -67,10 +69,10 @@ public class HomeController
 			}
 		}	
 	}
-	@PostMapping("/ForwardForVerification/{enquiryID}")
-	public ResponseEntity<String> forwardforverification(@PathVariable("enquiryID") int enquiryID)
+	@PostMapping("/forwardForVerification/{cid}")
+	public ResponseEntity<String> forwardforverification(@PathVariable("cid") int cid)
 	{	
-		ResponseEntity<String> response= esi.forwardforverification(enquiryID);
+		ResponseEntity<String> response= csi.forwardforverification(cid);
 		return response;		
 	}
 		
@@ -82,9 +84,9 @@ public class HomeController
 	}
 		
 	@GetMapping("getallRegistrationCompleted")
-	public ResponseEntity<List<Enquiry>> getAllRegistrationCompleted()
+	public ResponseEntity<List<Customer>> getAllRegistrationCompleted()
 	{
-		ResponseEntity<List<Enquiry>> response=esi.getAllRegistrationComplete();
+		ResponseEntity<List<Customer>> response=csi.getAllRegistrationComplete();
 		return response;
 	}
 }	

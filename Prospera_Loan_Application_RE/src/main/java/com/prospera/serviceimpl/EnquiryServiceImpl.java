@@ -11,6 +11,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import com.prospera.exception.InvalidEnquiryIDException;
+import com.prospera.model.Customer;
 import com.prospera.model.Enquiry;
 import com.prospera.repository.EnquiryRepository;
 import com.prospera.servicei.EnquiryServiceI;
@@ -40,54 +41,10 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 	}
 
 	@Override
-	public ResponseEntity<String> forwardforverification(int enquiryID)
-	{
-		Optional<Enquiry> e= er.findById(enquiryID);
-	     
-	    	if(e.get().getEnquiryStatus().equals("Registration Completed") && e.get().getLoanStatus().equals("Cibil Approved"))
-	    	{
-	    		e.get().setEnquiryStatus("Pending Verification");
-	    		er.save(e.get());
-	    		ResponseEntity<String> response=new ResponseEntity<String>(" Enquiry forwarded to OE for document verification ",HttpStatus.OK);
-	    		  try
-	    		  {
-	    			  SimpleMailMessage message=new SimpleMailMessage();
-	    			  message.setTo(e.get().getEmail());
-	    			  message.setSubject("Congrates " + e.get().getFirstName());
-	    			  message.setText("your document forwarded for verification");
-	    			  sender.send(message);
-	    		  }
-	    		  catch(MailSendException Exception)
-	    		  {
-	    			 System.out.println("Mail is incorrect");
-	    		  }
-	    		  return response;
-	    	}  
-	    	 else if(e.get().getLoanStatus().equals("Cibil Rejected"))
-	    	  {
-	    		  throw new InvalidEnquiryIDException("cibil score has been rejected");
-	    	  }
-	    	  else if( e.get().getEnquiryStatus().equals("Pending Registration"))
-	    	  {
-	    		  throw new InvalidEnquiryIDException("Registration is pending");
-	    	  }
-	    	  else
-	    	  {
-	    		  throw new  InvalidEnquiryIDException("Invalid Enquiry");
-	    	  }
-	 }
-	@Override
 	public ResponseEntity<List<Enquiry>> getAllPendingRegistration() {
 		List<Enquiry> l= er.findByEnquiryStatus("Pending Registration"); 
 		ResponseEntity<List<Enquiry>> response=new ResponseEntity<>(l,HttpStatus.OK);
 		return response;
 	}
 
-	@Override
-	public ResponseEntity<List<Enquiry>> getAllRegistrationComplete()
-	{
-		List<Enquiry> l= er.findByEnquiryStatus("Registration Completed"); 
-		ResponseEntity<List<Enquiry>> response=new ResponseEntity<>(l,HttpStatus.OK);
-		return response;
-	}
 }
