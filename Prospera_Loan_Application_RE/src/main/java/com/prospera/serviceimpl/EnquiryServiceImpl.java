@@ -88,5 +88,11 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 		return response;
 	}
 
-	
+	@Override
+	public ResponseEntity<List<Enquiry>> getAllRegistrationComplete()
+	{
+		List<Enquiry> l= er.findByEnquiryStatus("Registration Completed"); 
+		ResponseEntity<List<Enquiry>> response=new ResponseEntity<>(l,HttpStatus.OK);
+		return response;
+	}
 }
