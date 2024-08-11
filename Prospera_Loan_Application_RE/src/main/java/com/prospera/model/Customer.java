@@ -57,6 +57,7 @@ public class Customer
 	@OneToOne(cascade = CascadeType.ALL)
 	private Document doc;
 	
-	
+	@OneToOne(cascade = CascadeType.ALL)
+	private Sanction sanction;
 	
 }
