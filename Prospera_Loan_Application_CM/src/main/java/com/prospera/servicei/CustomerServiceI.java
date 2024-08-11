@@ -26,4 +26,8 @@ public interface CustomerServiceI
 
 	void sanction(Customer c, String enquiryStatus);
 
+	byte[] generateSanctionLetter(int cid);
+
+	void emailSanctionLetter(int cid) throws Exception;
+
 }
