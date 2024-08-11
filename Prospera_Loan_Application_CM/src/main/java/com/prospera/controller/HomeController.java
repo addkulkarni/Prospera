@@ -3,7 +3,9 @@ package com.prospera.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -74,9 +76,21 @@ public class HomeController
 	}
 	
 	@GetMapping("generatesanctionletter/{cid}")
-	public ResponseEntity<String> generateSanctionLetter(@PathVariable("cid")int cid)
+	public ResponseEntity<byte[]> generateSanctionLetter(@PathVariable("cid")int cid)
 	{
-		
-		return null;
+		byte[] pdfBytes = csi.generateSanctionLetter(cid);
+		HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("Attachment","Invoice.pdf");
+		ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(pdfBytes,headers,HttpStatus.OK);
+		return response;
+	}
+	
+	@GetMapping("emailsanctionletter/{cid}")
+	public ResponseEntity<String> emailSanctionLetter(@PathVariable("cid")int cid) throws Exception
+	{
+		csi.emailSanctionLetter(cid);
+		ResponseEntity<String> response = new ResponseEntity<String>("Email sent succesfully",HttpStatus.OK);
+		return response;
 	}
 }
