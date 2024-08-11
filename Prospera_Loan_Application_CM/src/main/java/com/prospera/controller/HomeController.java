@@ -93,4 +93,12 @@ public class HomeController
 		ResponseEntity<String> response = new ResponseEntity<String>("Email sent succesfully",HttpStatus.OK);
 		return response;
 	}
+	
+	@GetMapping("forwardtoAH/{cid}")
+	public ResponseEntity<String> forwardtoAH(@PathVariable("cid")int cid)
+	{
+		csi.forwardToAH(cid);
+		ResponseEntity<String> response = new ResponseEntity<String>("Forwarded to account head succesfully",HttpStatus.OK);
+		return response;
+	}
 }

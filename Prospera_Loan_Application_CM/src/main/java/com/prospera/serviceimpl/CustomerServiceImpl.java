@@ -21,7 +21,6 @@ import com.prospera.model.Sanction;
 import com.prospera.repository.CustomerRepository;
 import com.prospera.servicei.CustomerServiceI;
 
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
 @Service
@@ -228,6 +227,29 @@ public class CustomerServiceImpl implements CustomerServiceI
 			helper.addAttachment("Invoice.pdf", new ByteArrayResource(c.getDoc().getPan()));
 			sender.send(mm);
 			
+		}
+	}
+
+	@Override
+	public void forwardToAH(int cid)
+	{
+		Optional<Customer> o = cr.findById(cid);
+		if(!(o.isPresent()))
+		{
+			throw new InvalidCustomerException("Invalid customer");
+		}
+		else
+		{
+			Customer c = o.get();
+			if(c.getEnquiry().getEnquiryStatus().equals("Sanction approved by customer"))
+			{
+				c.getEnquiry().setEnquiryStatus("Forwarded to Account Head");
+				cr.save(c);
+			}
+			else
+			{
+				throw new InvalidCustomerException("Invalid customer");
+			}
 		}
 	}
 }

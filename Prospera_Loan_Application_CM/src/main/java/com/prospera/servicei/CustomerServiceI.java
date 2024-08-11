@@ -30,4 +30,6 @@ public interface CustomerServiceI
 
 	void emailSanctionLetter(int cid) throws Exception;
 
+	void forwardToAH(int cid);
+
 }
