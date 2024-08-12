@@ -18,5 +18,4 @@ public interface EnquiryServiceI
 
 	ResponseEntity<String> forwardToRE(int enquiryID);
 
-	ResponseEntity<String> forwardToCm(int cid);
 }
