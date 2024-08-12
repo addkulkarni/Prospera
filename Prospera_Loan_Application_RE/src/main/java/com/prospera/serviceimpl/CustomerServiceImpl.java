@@ -109,10 +109,7 @@ public class CustomerServiceImpl implements CustomerServiceI
     	  else
     	  {
     		  throw new InvalidEnquiryIDException("Invalid Enquiry");
-    	  }
-  
-		
-    	  
+    	  }	  
 	}
 
 	
