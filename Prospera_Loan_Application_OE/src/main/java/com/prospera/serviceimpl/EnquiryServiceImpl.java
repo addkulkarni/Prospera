@@ -132,34 +132,7 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 				throw new InvalidIdException("Invalid Enquiry");
 		}
 	}
-		
-	@Override
-	public ResponseEntity<String> forwardToCm(int cid)
-	{
-		Optional<Customer> o = cr.findById(cid);
-		
-		if(o.get().getEnquiry().getEnquiryStatus().equals("Verification Approved")&& o.get().getEnquiry().getLoanStatus().equals("Verification Approved"))
-		{
-			o.get().getEnquiry().setEnquiryStatus("Pending Sanction");
-			cr.save(o.get());
-			ResponseEntity<String> response = new ResponseEntity<String>("Enquiry forwarded to CM", HttpStatus.OK);
-			SimpleMailMessage msg = new SimpleMailMessage();
-			msg.setTo(o.get().getEmail());
-			msg.setSubject("Loan Application Update");
-			msg.setText("Hello "+o.get().getFirstName()+",\nYour applicaion has been forwared to Credit Manager for further checks and sanctioning of loan.\nYou will shortly receive the sanction letter with all the loan details. Please go through the letter carefully\nWe request you to contact the Relationship Executive soon along with the signed sanction letter so that we can go ahead with your application smoothly.\n\nThank you.\nTeam Prospera Finance");
-			
-			
-			return response;
-		}
-		else if(o.get().getEnquiry().getEnquiryStatus().equals("Verification Completed"))
-		{
-			throw new InvalidIdException("Verification already completed");
-		}
-		else 
-		{
-			throw new InvalidIdException("Invalid Enquiry");
-				
-		}			
-	}
+
+	
 }
 
