@@ -1,6 +1,9 @@
 package com.prospera.serviceimpl;
 
+import java.awt.Color;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -11,9 +14,18 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import com.lowagie.text.BadElementException;
 import com.lowagie.text.Document;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.CMYKColor;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.prospera.exception.InvalidCustomerException;
 import com.prospera.model.Customer;
@@ -180,30 +192,128 @@ public class CustomerServiceImpl implements CustomerServiceI
 	@Override
 	public byte[] generateSanctionLetter(int cid)
 	{
-		Optional<Customer> o = cr.findById(cid);
-		if(!(o.isPresent()))
+		Optional<Customer> cd = cr.findById(cid);
+		Customer cd1=cd.get();
+		if(cd.isPresent()) 
 		{
-			throw new InvalidCustomerException("Invalid customer");
+//			cd1.getSanction().setDate(new Date());
+//			cd1.getSanction().setSanctionId(s.getSanctionId());
+//			cd1.getSanction().setFirstName(cd1.getFirstName());
+//			cd1.getSanction().setLastName(cd1.getLastName());
+//			cd1.getSanction().setLoanamount(s.getLoanamount());
+//			cd1.getSanction().setTenure(s.getTenure());
+//			cd1.getSanction().setInterestRate(s.getInterestRate());
+//			cd1.getSanction().setEmiAmount(s.getEmiAmount());
+		
+			String title = "Prospera Finance Ltd.";
+
+			Document document = new Document(PageSize.A4);
+
+			String content1 = "\n\n Dear " + cd1.getFirstName()
+					+ ","
+					+ "\nProspera Finance Ltd. is Happy to informed you that your loan application has been approved. ";
+
+			String content2 = "\n\nWe hope that you find the terms and conditions of this loan satisfactory "
+					+ "and that it will help you meet your financial needs.\n\nIf you have any questions or need any assistance regarding your loan, "
+					+ "please do not hesitate to contact us.\n\nWe wish you all the best and thank you for choosing us."
+					+ "\n\nSincerely,\n\n" + "Vijay Chaudhari (Credit Manager)";
+
+			ByteArrayOutputStream opt = new ByteArrayOutputStream();
+			
+			PdfWriter.getInstance(document, opt);
+			document.open();
+
+			Image img = null;
+			try {
+
+				img = Image.getInstance("C:\\Users\\gayat\\OneDrive\\Pictures\\prospera.png");
+				
+				img.scalePercent(50, 50);
+				img.setAlignment(Element.ALIGN_RIGHT);
+				document.add(img);
+
+			} 
+			catch (BadElementException e1)
+			{
+				e1.printStackTrace();
+			}
+			catch (IOException e1) 
+			{
+				e1.printStackTrace();
+			}
+
+			Font titlefont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 25);
+			Paragraph titlepara = new Paragraph(title, titlefont);
+			titlepara.setAlignment(Element.ALIGN_CENTER);
+			document.add(titlepara);
+
+			Font titlefont2 = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10);
+			Paragraph paracontent1 = new Paragraph(content1, titlefont2);
+			document.add(paracontent1);
+
+			PdfPTable table = new PdfPTable(2);
+			table.setWidthPercentage(100f);
+			table.setWidths(new int[] { 2, 2 });
+			table.setSpacingBefore(10);
+
+			PdfPCell cell = new PdfPCell();
+			cell.setBackgroundColor(CMYKColor.WHITE);
+			cell.setPadding(5);
+
+			Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+			font.setColor(5, 5, 161);
+
+			Font font1 = FontFactory.getFont(FontFactory.HELVETICA);
+			font.setColor(5, 5, 161);
+
+			cell.setPhrase(new Phrase("Loan Amount Sanctioned", font));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase(String.valueOf("₹ " + cd1.getSanction().getLoanamount()),font1));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase("Loan Tenure", font));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase(String.valueOf(cd1.getSanction().getTenure()), font1));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase("Interest Rate", font));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase(String.valueOf(cd1.getSanction().getInterestRate()) + " %", font1));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase("Sanction letter generated Date", font));
+			table.addCell(cell);
+
+			cd1.getSanction().setDate(new Date());
+			cell.setPhrase(new Phrase(String.valueOf(cd1.getSanction().getDate()), font1));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase("Total loan Amount with Interest", font));
+			table.addCell(cell);
+
+			document.add(table);
+
+			Font titlefont3 = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10);
+			Paragraph paracontent2 = new Paragraph(content2, titlefont3);
+			document.add(paracontent2);
+			document.close();
+			
+			
+			ByteArrayInputStream byt = new ByteArrayInputStream(opt.toByteArray());
+			byte[] bytes = byt.readAllBytes();
+			cd1.getSanction().setSanctionLetter(bytes);
+			cr.save(cd1);
+			return bytes;
 		}
-		else
+		else 
 		{
-			if(o.get().getEnquiry().getEnquiryStatus().equals("EMI calculated"))
-			{
-				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-				Document document = new Document(PageSize.A4);
-				PdfWriter.getInstance(document, byteArrayOutputStream);
-				document.open();
-				document.addTitle("Invoice");
-				document.add(new Paragraph("Hello, this is a sample PDF created using OpenPDF!"));
-				document.close();
-				return byteArrayOutputStream.toByteArray();
-			}
-			else
-			{
-				throw new InvalidCustomerException("Invalid customer");
-			}
-		}
+			return null;
+		}	
 	}
+
 
 	@Override
 	public void emailSanctionLetter(int cid) throws Exception
@@ -216,16 +326,23 @@ public class CustomerServiceImpl implements CustomerServiceI
 		else
 		{
 			Customer c = o.get();
-			MimeMessage mm = sender.createMimeMessage();
-			MimeMessageHelper helper = new MimeMessageHelper(mm,true);
-			helper.setTo(c.getEmail());
-			helper.setSubject("Loan Sanction Letter");
-			helper.setText("Hello "+c.getFirstName()+",\nWe are please to share with you the sanction letter for your loan application.\n"
-					+ "Please go through the document carefully and please sign the letter and submit it to the Relationship Excecutive.\n"
-					+ "If you have any doubts or if you wish to reject the sanction letter please let us know about it as we may revise the letter by taking into consideration your conditions as well.\n"
-					+ "Please find attached.\nTeam Prospera Finance");
-			helper.addAttachment("Invoice.pdf", new ByteArrayResource(c.getDoc().getPan()));
-			sender.send(mm);
+			if(c.getEnquiry().getEnquiryStatus().equals("EMI calculated")&& c.getEnquiry().getLoanStatus().equals("Verification Approved"))
+			{
+				MimeMessage mm = sender.createMimeMessage();
+				MimeMessageHelper helper = new MimeMessageHelper(mm,true);
+				helper.setTo(c.getEmail());
+				helper.setSubject("Loan Sanction Letter");
+				helper.setText("Hello "+c.getFirstName()+",\nWe are please to share with you the sanction letter for your loan application.\n"
+						+ "Please go through the document carefully and please sign the letter and submit it to the Relationship Excecutive.\n"
+						+ "If you have any doubts or if you wish to reject the sanction letter please let us know about it as we may revise the letter by taking into consideration your conditions as well.\n"
+						+ "Please find attached.\nTeam Prospera Finance");
+				helper.addAttachment("Invoice.pdf", new ByteArrayResource(c.getSanction().getSanctionLetter()));
+				sender.send(mm);
+			}
+			else
+			{
+				throw new InvalidCustomerException("Invalid customer...");
+			}
 			
 		}
 	}
