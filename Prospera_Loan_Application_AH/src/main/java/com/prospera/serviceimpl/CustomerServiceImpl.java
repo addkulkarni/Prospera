@@ -31,6 +31,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.prospera.exception.InvalidCustomerException;
 import com.prospera.model.Customer;
+import com.prospera.model.Disbursement;
 import com.prospera.model.Ledger;
 import com.prospera.model.Sanction;
 import com.prospera.repository.CustomerRepository;
@@ -363,7 +364,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 			Image img = null;
 			try {
 
-				img = Image.getInstance("C:\\Users\\omkar\\Desktop\\Git\\prosperalogo.jpeg");
+				img = Image.getInstance("C:\\Users\\addku\\Desktop\\ProsperaConfig\\prospera.png");
 				
 				img.scalePercent(50, 50);
 				img.setAlignment(Element.ALIGN_RIGHT);
@@ -406,7 +407,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 			cell.setPhrase(new Phrase("Disbursement ID", font));
 			table.addCell(cell);
 
-			cell.setPhrase(new Phrase(String.valueOf(new Random().nextLong(100000,99999999)) + " %", font1));
+			cell.setPhrase(new Phrase(String.valueOf(new Random().nextInt(100000,99999999)), font1));
 			table.addCell(cell);
 			
 			cell.setPhrase(new Phrase("Total Disbursement Amount", font));
@@ -419,8 +420,11 @@ public class CustomerServiceImpl implements CustomerServiceI
 			table.addCell(cell);
                  
 //			 set random DisbursementAccountNo
-			 long disAcc=new Random().nextLong(10000000,999999999);
-			 cd1.getDisbursement().setDisbursementAccountNo(disAcc);
+			 int disAcc=new Random().nextInt(10000000,999999999);
+			 Disbursement d = new Disbursement();
+			 d.setDisbursementAccountNo(disAcc);;
+			 cd1.setDisbursement(d);
+			 cr.save(cd1);
 			 
 			cell.setPhrase(new Phrase(String.valueOf(disAcc), font1));
 			table.addCell(cell);
@@ -449,7 +453,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 				helper.setSubject("Disbursement Letter");
 				helper.setText("Hello "+cd1.getFirstName()+",\nWe are please to share with you the Disbursement letter for your loan application.\n"
 						+ "\nTeam Prospera Finance");
-				helper.addAttachment("Invoice.pdf", new ByteArrayResource(bytes));
+				helper.addAttachment("Disbursement Letter.pdf", new ByteArrayResource(bytes));
 				sender.send(mm);
 		       return bytes;
 		}

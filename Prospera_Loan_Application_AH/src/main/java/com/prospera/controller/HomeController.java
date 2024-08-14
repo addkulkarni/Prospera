@@ -94,7 +94,7 @@ public class HomeController
         headers.setContentType(MediaType.APPLICATION_PDF);
         Date d = new Date();
         String date = d.toString();
-        headers.setContentDispositionFormData("Attachment","Invoice "+date+".pdf");
+        headers.setContentDispositionFormData("Attachment","Disbursement Letter "+date+".pdf");
 		ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(pdfBytes,headers,HttpStatus.OK);
 		return response;
 	}
