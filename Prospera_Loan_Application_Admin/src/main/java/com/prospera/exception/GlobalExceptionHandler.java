@@ -24,4 +24,43 @@ public class GlobalExceptionHandler
 		ResponseEntity<ApiError> repsonse = new ResponseEntity<ApiError>(error,HttpStatus.NOT_FOUND);
 		return repsonse;
 	}
+	
+	@ExceptionHandler(value = EmailNotFoundException.class)
+	public ResponseEntity<ApiError> EmailNotFoundHandler(EmailNotFoundException e, HttpServletRequest request)
+	{
+		ApiError error = new ApiError();
+		error.setMessage(e.getMessage());
+		error.setPath(request.getRequestURI());
+		error.setStatusCode(HttpStatus.NOT_FOUND.value());
+		error.setStatusMessage(HttpStatus.NOT_FOUND);
+		error.setTimeStamp(new Date());
+		ResponseEntity<ApiError> repsonse = new ResponseEntity<ApiError>(error,HttpStatus.NOT_FOUND);
+		return repsonse;
+	}
+	
+	@ExceptionHandler(value = InvalidEnquiryStatusException.class)
+	public ResponseEntity<ApiError> InvalidEnquiryStatusHandler(InvalidEnquiryStatusException e, HttpServletRequest request)
+	{
+		ApiError error = new ApiError();
+		error.setMessage(e.getMessage());
+		error.setPath(request.getRequestURI());
+		error.setStatusCode(HttpStatus.NOT_FOUND.value());
+		error.setStatusMessage(HttpStatus.NOT_FOUND);
+		error.setTimeStamp(new Date());
+		ResponseEntity<ApiError> repsonse = new ResponseEntity<ApiError>(error,HttpStatus.NOT_FOUND);
+		return repsonse;
+	}
+	
+	@ExceptionHandler(value = InvalidLoanStatusException.class)
+	public ResponseEntity<ApiError> InvalidLoanStatusHandler(InvalidLoanStatusException e, HttpServletRequest request)
+	{
+		ApiError error = new ApiError();
+		error.setMessage(e.getMessage());
+		error.setPath(request.getRequestURI());
+		error.setStatusCode(HttpStatus.NOT_FOUND.value());
+		error.setStatusMessage(HttpStatus.NOT_FOUND);
+		error.setTimeStamp(new Date());
+		ResponseEntity<ApiError> repsonse = new ResponseEntity<ApiError>(error,HttpStatus.NOT_FOUND);
+		return repsonse;
+	}
 }
