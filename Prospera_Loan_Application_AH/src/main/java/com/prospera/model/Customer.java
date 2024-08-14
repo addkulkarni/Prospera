@@ -64,4 +64,7 @@ public class Customer
 	
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<Ledger> Ledger;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	private Disbursement disbursement;
 }

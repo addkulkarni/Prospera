@@ -3,7 +3,9 @@ package com.prospera.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,10 +55,13 @@ public class HomeController
 	}
 	
 	@GetMapping("payEMI/{cid}/{ledgerId}")
-	public ResponseEntity<String> payEMI(@PathVariable("ledgerId")int ledgerId, @PathVariable("cid")int cid)
+	public ResponseEntity<String> payEMI(@PathVariable("ledgerId")int ledgerId, @PathVariable("cid")int cid) throws Exception
 	{
 		Ledger ledger = lsi.getLedger(ledgerId);
 		String message = csi.updateLedgerList(cid, ledger);
+		HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("Attachment","EMI Reciept.pdf");
 		if(message.equals("You have failed to pay consecutive three EMIs and hence you've been marked as defaulter"))
 		{
 			ResponseEntity<String> response = new ResponseEntity<String>(message,HttpStatus.OK);
