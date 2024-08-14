@@ -134,7 +134,6 @@ public class CustomerServiceImpl implements CustomerServiceI
 					l.setNextEmiEndDate(emi_end_date);
 					end_date_calendar.add(Calendar.MONTH, 1);
 					emi_end_date = end_date_calendar.getTime();
-					l.setPreviousEmiStatus("Unpaid");
 					l.setCurrentMonthEmiStatus("Unpaid");
 					l.setLoanEndDate(loan_end_date);
 					l.setLoanStatus("Ongoing");
@@ -261,7 +260,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 			Image img = null;
 			try {
 
-				img = Image.getInstance("C:\\Users\\addku\\Desktop\\ProsperaConfig\\prospera.png");
+				img = Image.getInstance("C:\\Users\\omkar\\Desktop\\Git\\prosperalogo.jpeg");
 				
 				img.scalePercent(50, 50);
 				img.setAlignment(Element.ALIGN_RIGHT);
@@ -336,4 +335,140 @@ public class CustomerServiceImpl implements CustomerServiceI
 			return null;
 		}	
 	}
+
+	@Override
+	public byte[] generateDisbursementletter(int cid) throws MessagingException {
+		Optional<Customer> cd = cr.findById(cid);
+		Customer cd1=cd.get();
+		if(cd.isPresent()) 
+		{
+			String title = "Prospera Finance Ltd.";
+
+			Document document = new Document(PageSize.A4);
+
+			String content1 = "\n\n Dear " + cd1.getFirstName()
+					+ ","
+					+ "\nProspera Finance Ltd. is Happy to informed you that your Disbursement Amount has been completed . ";
+
+			String content2 = "\n\nThe funds have been transferred to your designated account and should be available for use shortly. "
+					+ "Should you have any questions or require further assistance, please do not hesitate to contact us., "
+					+ "please do not hesitate to contact us.\n\nWe wish you all the best and thank you for choosing us."
+					+ "\n\nSincerely,\n\n" + "Vijay Chaudhari (Credit Manager)";
+
+			ByteArrayOutputStream opt = new ByteArrayOutputStream();
+			
+			PdfWriter.getInstance(document, opt);
+			document.open();
+
+			Image img = null;
+			try {
+
+				img = Image.getInstance("C:\\Users\\omkar\\Desktop\\Git\\prosperalogo.jpeg");
+				
+				img.scalePercent(50, 50);
+				img.setAlignment(Element.ALIGN_RIGHT);
+				document.add(img);
+
+			} 
+			catch (BadElementException e1)
+			{
+				e1.printStackTrace();
+			}
+			catch (IOException e1) 
+			{
+				e1.printStackTrace();
+			}
+
+			Font titlefont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 25);
+			Paragraph titlepara = new Paragraph(title, titlefont);
+			titlepara.setAlignment(Element.ALIGN_CENTER);
+			document.add(titlepara);
+
+			Font titlefont2 = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10);
+			Paragraph paracontent1 = new Paragraph(content1, titlefont2);
+			document.add(paracontent1);
+
+			PdfPTable table = new PdfPTable(2);
+			table.setWidthPercentage(100f);
+			table.setWidths(new int[] { 2, 2 });
+			table.setSpacingBefore(10);
+
+			PdfPCell cell = new PdfPCell();
+			cell.setBackgroundColor(CMYKColor.WHITE);
+			cell.setPadding(5);
+
+			Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+			font.setColor(5, 5, 161);
+
+			Font font1 = FontFactory.getFont(FontFactory.HELVETICA);
+			font.setColor(5, 5, 161);
+
+			cell.setPhrase(new Phrase("Disbursement ID", font));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase(String.valueOf(new Random().nextLong(100000,99999999)) + " %", font1));
+			table.addCell(cell);
+			
+			cell.setPhrase(new Phrase("Total Disbursement Amount", font));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase(String.valueOf("₹ " + cd1.getSanction().getLoanamount()),font1));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase("Disbursement Account Number", font));
+			table.addCell(cell);
+                 
+//			 set random DisbursementAccountNo
+			 long disAcc=new Random().nextLong(10000000,999999999);
+			 cd1.getDisbursement().setDisbursementAccountNo(disAcc);
+			 
+			cell.setPhrase(new Phrase(String.valueOf(disAcc), font1));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase("Disbursement timestamp", font));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase(String.valueOf(new Date()), font1));
+			table.addCell(cell);
+
+			document.add(table);
+
+			Font titlefont3 = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10);
+			Paragraph paracontent2 = new Paragraph(content2, titlefont3);
+			document.add(paracontent2);
+			document.close();
+			
+			
+			ByteArrayInputStream byt = new ByteArrayInputStream(opt.toByteArray());
+			byte[] bytes = byt.readAllBytes();
+			cd1.getDisbursement().setDisbursementLetter(bytes);
+			cr.save(cd1);
+				MimeMessage mm = sender.createMimeMessage();
+				MimeMessageHelper helper=new MimeMessageHelper(mm,true);
+				helper.setTo(cd1.getEmail());
+				helper.setSubject("Disbursement Letter");
+				helper.setText("Hello "+cd1.getFirstName()+",\nWe are please to share with you the Disbursement letter for your loan application.\n"
+						+ "\nTeam Prospera Finance");
+				helper.addAttachment("Invoice.pdf", new ByteArrayResource(bytes));
+				sender.send(mm);
+		       return bytes;
+		}
+		else
+		{
+			return null ;
+		}
+	}
+
+	@Override
+	public Customer getCustomer(int cid) {
+		
+		return cr.findById(cid).get();
+	}
+
+	
+	
+
+
+	
+	
 }

@@ -22,4 +22,12 @@ public interface CustomerServiceI
 
 	void updateLedgerList(int cid, List<Ledger> updatedLedgerList);
 
+	
+
+	byte[] generateDisbursementletter(int cid) throws MessagingException;
+
+	Customer getCustomer(int cid);
+
+
 }
+

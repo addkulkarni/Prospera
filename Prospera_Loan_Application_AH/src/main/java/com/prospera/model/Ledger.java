@@ -37,7 +37,6 @@ public class Ledger
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Temporal(TemporalType.DATE)
 	private Date nextEmiEndDate;	
-	private String previousEmiStatus;
 	private String currentMonthEmiStatus;
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Temporal(TemporalType.DATE)
