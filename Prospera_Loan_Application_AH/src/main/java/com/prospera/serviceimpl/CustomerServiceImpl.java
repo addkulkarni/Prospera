@@ -1,10 +1,14 @@
 package com.prospera.serviceimpl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -12,6 +16,19 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.Document;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.Image;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.CMYKColor;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 import com.prospera.exception.InvalidCustomerException;
 import com.prospera.model.Customer;
 import com.prospera.model.Ledger;
@@ -27,7 +44,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 {
 	@Autowired
 	CustomerRepository cr;
-
+	
 	@Autowired
 	JavaMailSender sender;
 	
@@ -132,40 +149,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 			}
 		}
 	}
-
-	@Override
-	public String updateLedgerList(int cid, Ledger l)
-	{
-		Optional<Customer> o = cr.findById(cid);
-		if(!(o.isPresent()))
-		{
-			throw new InvalidCustomerException("Customer not found");
-		}
-		else
-		{
-			Customer c = o.get();
-			if(l.getLoanStatus().equals("Defaulter"))
-			{
-				return "You have failed to pay consecutive three EMIs and hence you've been marked as defaulter";
-			}
-			else
-			{
-				List<Ledger> ledgerList =c.getLedger();
-				l.setCurrentMonthEmiStatus("Paid");
-				float remainingAmount = l.getRemainingAmount()-l.getMonthlyEmi();
-				float amountPaidTillDate = l.getAmountPaidTillDate()+l.getMonthlyEmi();
-				for(Ledger le:ledgerList)
-				{
-					le.setAmountPaidTillDate(amountPaidTillDate);
-					le.setRemainingAmount(remainingAmount);
-				}
-				c.setLedger(ledgerList);
-				cr.save(c);
-				return "EMI for the current month has been paid.";
-			}
-		}
-	}
-
+	
 	@Override
 	public List<Ledger> getLedgerList(int cid)
 	{
@@ -194,5 +178,162 @@ public class CustomerServiceImpl implements CustomerServiceI
 			c.getEnquiry().setEnquiryStatus("Defaulter");
 		}
 		cr.save(c);
+	}
+
+	@Override
+	public String updateLedgerList(int cid, Ledger l) throws Exception
+	{
+		Optional<Customer> o = cr.findById(cid);
+		if(!(o.isPresent()))
+		{
+			throw new InvalidCustomerException("Customer not found");
+		}
+		else
+		{
+			Customer c = o.get();
+			if(l.getLoanStatus().equals("Defaulter"))
+			{
+				return "You have failed to pay consecutive three EMIs and hence you've been marked as defaulter";
+			}
+			else
+			{
+				List<Ledger> ledgerList =c.getLedger();
+				l.setCurrentMonthEmiStatus("Paid");
+				float remainingAmount = l.getRemainingAmount()-l.getMonthlyEmi();
+				float amountPaidTillDate = l.getAmountPaidTillDate()+l.getMonthlyEmi();
+				for(Ledger le:ledgerList)
+				{
+					le.setAmountPaidTillDate(amountPaidTillDate);
+					le.setRemainingAmount(remainingAmount);
+				}
+				
+				//getting generated EMI reciept through an another method
+				
+				CustomerServiceImpl csi = new CustomerServiceImpl();
+				byte[] emiReciept = csi.generateEMIReciept(c);
+				
+				MimeMessage mm = sender.createMimeMessage();
+				MimeMessageHelper helper = new MimeMessageHelper(mm, true);
+				helper.setTo(c.getEnquiry().getEmail());
+				helper.setSubject("EMI payment reciept");
+				helper.setText("Hello "+c.getFirstName()+",\nYour EMI for the current month has been paid successfully.\n"
+						+ "Attached is the reciept for the transaction.\nThank you for banking with us.\nTeam Prospera Finance");
+				helper.addAttachment("EMI Reciept.pdf", new ByteArrayResource(emiReciept));
+				
+				sender.send(mm);
+				c.setLedger(ledgerList);
+				cr.save(c);
+				return "EMI for the current month has been paid.";
+			}
+		}
+	}
+
+	//method to create EMI reciept
+	public byte[] generateEMIReciept(Customer c)
+	{
+		if(c!=null) 
+		{
+//			cd1.getSanction().setDate(new Date());
+//			cd1.getSanction().setSanctionId(s.getSanctionId());
+//			cd1.getSanction().setFirstName(cd1.getFirstName());
+//			cd1.getSanction().setLastName(cd1.getLastName());
+//			cd1.getSanction().setLoanamount(s.getLoanamount());
+//			cd1.getSanction().setTenure(s.getTenure());
+//			cd1.getSanction().setInterestRate(s.getInterestRate());
+//			cd1.getSanction().setEmiAmount(s.getEmiAmount());
+	
+			String title = "Prospera Finance Ltd.";
+
+			Document document = new Document(PageSize.A4);
+
+			String content1 = "\n\nDear " + c.getFirstName()
+					+ ","
+					+ "\nProspera Finance Ltd. is Happy to informed you that you have successfully paid your EMI for this month";
+
+			String content2 = "\nAbove are the details about the transaction. Please contact the bank in case of any discrepencies in the transaction.\n"
+					+ "Thank you for banking with us.\nTeam Prospera Finance";
+
+			ByteArrayOutputStream opt = new ByteArrayOutputStream();
+			
+			PdfWriter.getInstance(document, opt);
+			document.open();
+
+			Image img = null;
+			try {
+
+				img = Image.getInstance("C:\\Users\\addku\\Desktop\\ProsperaConfig\\prospera.png");
+				
+				img.scalePercent(50, 50);
+				img.setAlignment(Element.ALIGN_RIGHT);
+				document.add(img);
+
+			} 
+			catch (BadElementException e1)
+			{
+				e1.printStackTrace();
+			}
+			catch (IOException e1) 
+			{
+				e1.printStackTrace();
+			}
+
+			Font titlefont = FontFactory.getFont(FontFactory.COURIER, 25);
+			Paragraph titlepara = new Paragraph(title, titlefont);
+			titlepara.setAlignment(Element.ALIGN_CENTER);
+			document.add(titlepara);
+
+			Font titlefont2 = FontFactory.getFont(FontFactory.COURIER, 10);
+			Paragraph paracontent1 = new Paragraph(content1, titlefont2);
+			document.add(paracontent1);
+
+			PdfPTable table = new PdfPTable(2);
+			table.setWidthPercentage(100f);
+			table.setWidths(new int[] { 2, 2 });
+			table.setSpacingBefore(10);
+
+			PdfPCell cell = new PdfPCell();
+			cell.setBackgroundColor(CMYKColor.WHITE);
+			cell.setPadding(5);
+
+			Font font = FontFactory.getFont(FontFactory.COURIER);
+			font.setColor(5, 5, 161);
+
+			Font font1 = FontFactory.getFont(FontFactory.COURIER);
+			font.setColor(5, 5, 161);
+
+			cell.setPhrase(new Phrase("EMI Amount Paid", font));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase(String.valueOf("₹ " + c.getSanction().getEmiAmount()),font1));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase("Transaction ID", font));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase(String.valueOf(new Random().nextInt(1000000,9999999)), font1));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase("Transaction timestamp", font));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase(String.valueOf(new Date()), font1));
+			table.addCell(cell);
+
+			document.add(table);
+
+			Font titlefont3 = FontFactory.getFont(FontFactory.COURIER, 10);
+			Paragraph paracontent2 = new Paragraph(content2, titlefont3);
+			document.add(paracontent2);
+			document.close();
+			
+			
+			ByteArrayInputStream byt = new ByteArrayInputStream(opt.toByteArray());
+			byte[] bytes = byt.readAllBytes();
+			return bytes;
+		}
+		else 
+		{
+			return null;
+		}	
 	}
 }

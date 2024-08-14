@@ -16,7 +16,7 @@ public interface CustomerServiceI
 
 	void createLedger(int cid);
 
-	String updateLedgerList(int cid, Ledger ledger);
+	String updateLedgerList(int cid, Ledger ledger) throws Exception;
 
 	List<Ledger> getLedgerList(int cid);
 
