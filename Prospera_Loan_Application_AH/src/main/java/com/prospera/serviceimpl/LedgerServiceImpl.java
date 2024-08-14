@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import com.prospera.exception.InvalidLedgerException;
@@ -17,6 +19,9 @@ public class LedgerServiceImpl implements LedgerServiceI
 	@Autowired
 	LedgerRepository lr;
 
+	@Autowired
+	JavaMailSender sender;
+	
 	@Override
 	public Ledger getLedger(int ledgerId)
 	{
@@ -44,6 +49,7 @@ public class LedgerServiceImpl implements LedgerServiceI
 		{
 			Ledger l = o.get();
 			l.setCurrentMonthEmiStatus("Skipped");
+			
 			int count = 0;
 			for(Ledger led:ledger)
 			{
