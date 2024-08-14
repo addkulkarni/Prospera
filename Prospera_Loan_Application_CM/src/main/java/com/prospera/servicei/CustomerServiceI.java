@@ -25,11 +25,11 @@ public interface CustomerServiceI
 	Customer getForRejectSanction(int cid);
 
 	void sanction(Customer c, String enquiryStatus);
-
-	byte[] generateSanctionLetter(int cid);
-
+ 
 	void emailSanctionLetter(int cid) throws Exception;
 
 	void forwardToAH(int cid);
+
+	byte[] generateSanctionLetter(int cid);
 
 }

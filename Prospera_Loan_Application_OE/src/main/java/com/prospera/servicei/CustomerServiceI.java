@@ -12,4 +12,6 @@ public interface CustomerServiceI
 	List<Customer> getAllVerificationPending();
 
 	ResponseEntity<String> getVerification(int cid, String loanStatus);
+
+	ResponseEntity<String> forwardToCm(int cid);
 }

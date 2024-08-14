@@ -12,6 +12,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import com.prospera.exception.InvalidCustomerException;
 import com.prospera.exception.InvalidEnquiryIDException;
 import com.prospera.model.Customer;
 import com.prospera.model.Enquiry;
@@ -82,9 +83,12 @@ public class CustomerServiceImpl implements CustomerServiceI
 	public ResponseEntity<String> forwardforverification(int cid)
 	{
 		Optional<Customer> o= cr.findById(cid);
-	     
-    	if(o.get().getEnquiry().getEnquiryStatus().equals("Registration Completed") && o.get().getEnquiry().getLoanStatus().equals("Cibil Approved"))
-    	{
+		if(!(o.isPresent()))
+		 {
+			throw new InvalidCustomerException("Invalid Customer");
+		 }
+	     else if(o.get().getEnquiry().getEnquiryStatus().equals("Registration Completed") && o.get().getEnquiry().getLoanStatus().equals("Cibil Approved"))
+	     {
     		o.get().getEnquiry().setEnquiryStatus("Pending Verification");
     		cr.save(o.get());
     		ResponseEntity<String> response=new ResponseEntity<String>(" Enquiry forwarded to OE for document verification ",HttpStatus.OK);
@@ -102,18 +106,10 @@ public class CustomerServiceImpl implements CustomerServiceI
     		  }
     		  return response;
     	}  
-    	 else if(o.get().getEnquiry().getLoanStatus().equals("Cibil Rejected"))
-    	  {
-    		  throw new InvalidEnquiryIDException("cibil score has been rejected");
-    	  }
-    	  else if( o.get().getEnquiry().getEnquiryStatus().equals("Pending Registration"))
-    	  {
-    		  throw new InvalidEnquiryIDException("Registration is pending");
-    	  }
     	  else
     	  {
-    		  throw new  InvalidEnquiryIDException("Invalid Enquiry");
-    	  }
+    		  throw new InvalidEnquiryIDException("Invalid Enquiry");
+    	  }	  
 	}
 
 	
