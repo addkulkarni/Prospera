@@ -159,7 +159,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 		}
 		else
 		{
-			if(o.get().getEnquiry().getEnquiryStatus().equals("EMI calculated"))
+			if(o.get().getEnquiry().getEnquiryStatus().equals("Sanction Letter Generated"))
 			{
 				return o.get();
 			}
@@ -195,16 +195,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 		Optional<Customer> cd = cr.findById(cid);
 		Customer cd1=cd.get();
 		if(cd.isPresent()) 
-		{
-//			cd1.getSanction().setDate(new Date());
-//			cd1.getSanction().setSanctionId(s.getSanctionId());
-//			cd1.getSanction().setFirstName(cd1.getFirstName());
-//			cd1.getSanction().setLastName(cd1.getLastName());
-//			cd1.getSanction().setLoanamount(s.getLoanamount());
-//			cd1.getSanction().setTenure(s.getTenure());
-//			cd1.getSanction().setInterestRate(s.getInterestRate());
-//			cd1.getSanction().setEmiAmount(s.getEmiAmount());
-		
+		{	
 			String title = "Prospera Finance Ltd.";
 
 			Document document = new Document(PageSize.A4);
@@ -290,8 +281,11 @@ public class CustomerServiceImpl implements CustomerServiceI
 			cd1.getSanction().setDate(new Date());
 			cell.setPhrase(new Phrase(String.valueOf(cd1.getSanction().getDate()), font1));
 			table.addCell(cell);
-
-			cell.setPhrase(new Phrase("Total loan Amount with Interest", font));
+			
+			cell.setPhrase(new Phrase("EMI Amount", font));
+			table.addCell(cell);
+			
+			cell.setPhrase(new Phrase(String.valueOf(cd1.getSanction().getEmiAmount()),font1));
 			table.addCell(cell);
 
 			document.add(table);
@@ -305,6 +299,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 			ByteArrayInputStream byt = new ByteArrayInputStream(opt.toByteArray());
 			byte[] bytes = byt.readAllBytes();
 			cd1.getSanction().setSanctionLetter(bytes);
+			cd1.getEnquiry().setEnquiryStatus("Sanction Letter Generated");
 			cr.save(cd1);
 			return bytes;
 		}
@@ -319,33 +314,37 @@ public class CustomerServiceImpl implements CustomerServiceI
 	public void emailSanctionLetter(int cid) throws Exception
 	{
 		Optional<Customer> o = cr.findById(cid);
-		if(!(o.isPresent()))
-		{
-			throw new InvalidCustomerException("Invalid customer");
-		}
-		else
-		{
-			Customer c = o.get();
-			if(c.getEnquiry().getEnquiryStatus().equals("EMI calculated")&& c.getEnquiry().getLoanStatus().equals("Verification Approved"))
+			if(!(o.isPresent()))
 			{
-				MimeMessage mm = sender.createMimeMessage();
-				MimeMessageHelper helper = new MimeMessageHelper(mm,true);
-				helper.setTo(c.getEmail());
-				helper.setSubject("Loan Sanction Letter");
-				helper.setText("Hello "+c.getFirstName()+",\nWe are please to share with you the sanction letter for your loan application.\n"
-						+ "Please go through the document carefully and please sign the letter and submit it to the Relationship Excecutive.\n"
-						+ "If you have any doubts or if you wish to reject the sanction letter please let us know about it as we may revise the letter by taking into consideration your conditions as well.\n"
-						+ "Please find attached.\nTeam Prospera Finance");
-				helper.addAttachment("Invoice.pdf", new ByteArrayResource(c.getSanction().getSanctionLetter()));
-				sender.send(mm);
+				throw new InvalidCustomerException("Customer is not present in database");
 			}
 			else
 			{
-				throw new InvalidCustomerException("Invalid customer...");
+				Customer c = o.get();
+				if(c.getEnquiry().getEnquiryStatus().equals("Sanction Letter Generated")&& c.getEnquiry().getLoanStatus().equals("Verification Approved"))
+				{
+					MimeMessage mm = sender.createMimeMessage();
+					MimeMessageHelper helper = new MimeMessageHelper(mm,true);
+					helper.setTo(c.getEmail());
+					helper.setSubject("Loan Sanction Letter");
+					helper.setText("Hello "+c.getFirstName()+",\nWe are please to share with you the sanction letter for your loan application.\n"
+							+ "Please go through the document carefully and please sign the letter and submit it to the Relationship Excecutive.\n"
+							+ "If you have any doubts or if you wish to reject the sanction letter please let us know about it as we may revise the letter by taking into consideration your conditions as well.\n"
+							+ "Please find attached.\nTeam Prospera Finance");
+					helper.addAttachment("Invoice.pdf", new ByteArrayResource(c.getSanction().getSanctionLetter()));
+					sender.send(mm);
+				}
+				else if(c.getEnquiry().getEnquiryStatus().equals("EMI calculated")&& c.getEnquiry().getLoanStatus().equals("Verification Approved"))
+				{
+					throw new InvalidCustomerException("Sanction letter not yet generated");
+				}
+				else
+				{
+					throw new InvalidCustomerException("Invalid Customer");
+				}
 			}
-			
+					
 		}
-	}
 
 	@Override
 	public void forwardToAH(int cid)
