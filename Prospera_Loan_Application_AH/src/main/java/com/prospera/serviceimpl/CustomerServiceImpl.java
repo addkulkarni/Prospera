@@ -12,6 +12,7 @@ import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -118,7 +119,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 				Date loan_end_date = current_date_cal.getTime();
 			
 				List<Ledger> ledgerList = new ArrayList<>();
-				for(int i=1; i<=12; i++)
+				for(int i=1; i<=c.getSanction().getTenure(); i++)
 				{
 					Sanction sanction = c.getSanction();
 					Ledger l = new Ledger();
@@ -467,6 +468,24 @@ public class CustomerServiceImpl implements CustomerServiceI
 	public Customer getCustomer(int cid) {
 		
 		return cr.findById(cid).get();
+	}
+
+	@Override
+	public void closeLoan(int cid)
+	{
+		Customer c = cr.findById(cid).get();
+		List<Ledger>ledgerList = c.getLedger();
+		for(Ledger l:ledgerList)
+		{
+			l.setLoanStatus("Closed");
+		}
+		c.setLedger(ledgerList);
+		SimpleMailMessage msg = new SimpleMailMessage();
+		msg.setTo(c.getEmail());
+		msg.setSubject("Loan closing update");
+		msg.setText("Hello "+c.getFirstName()+",\nYour loan has been closed after the last payment\nThank you");
+		sender.send(msg);
+		cr.save(c);
 	}
 
 	

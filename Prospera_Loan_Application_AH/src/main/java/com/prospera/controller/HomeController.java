@@ -60,6 +60,10 @@ public class HomeController
 	{
 		Ledger ledger = lsi.getLedger(ledgerId);
 		String message = csi.updateLedgerList(cid, ledger);
+		if(ledger.getRemainingAmount()==0)
+		{
+			csi.closeLoan(cid);
+		}
 		HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         headers.setContentDispositionFormData("Attachment","EMI Reciept.pdf");
@@ -73,6 +77,7 @@ public class HomeController
 			ResponseEntity<String> response = new ResponseEntity<String>(message,HttpStatus.OK);
 			return response;
 		}
+		
 		
 	}
 	
