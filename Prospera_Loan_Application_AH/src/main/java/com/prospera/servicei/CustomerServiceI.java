@@ -28,6 +28,8 @@ public interface CustomerServiceI
 
 	Customer getCustomer(int cid);
 
+	void closeLoan(int cid);
+
 
 }
 
