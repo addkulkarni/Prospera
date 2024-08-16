@@ -30,6 +30,10 @@ public interface CustomerServiceI
 
 	void closeLoan(int cid);
 
+	void addDisbursementAccount(Customer c, int disbursementAccountNo);
+
+	
+
 
 }
 
