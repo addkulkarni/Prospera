@@ -10,9 +10,11 @@ import com.prospera.model.User;
 
 public interface UserServiceI {
 
-	ResponseEntity<String> saveUser(User u);
+	void  saveUser(User u);
 
 	User getByUsernameAndPassword(String username, String password);
+
+	List<User> getAllUsers();
 
 
 
