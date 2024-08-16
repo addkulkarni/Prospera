@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.prospera.exception.InvalidLedgerException;
 import com.prospera.model.Customer;
 import com.prospera.model.Ledger;
 import com.prospera.servicei.CustomerServiceI;
@@ -56,28 +57,43 @@ public class HomeController
 	}
 	
 	@GetMapping("payEMI/{cid}/{ledgerId}")
-	public ResponseEntity<String> payEMI(@PathVariable("ledgerId")int ledgerId, @PathVariable("cid")int cid) throws Exception
+	public ResponseEntity<String> payEMI(@PathVariable("cid")int cid, @PathVariable("ledgerId")int ledgerId) throws Exception
 	{
+		Customer c = csi.getCustomer(cid);
+		List<Ledger> ledgerList = c.getLedger();
 		Ledger ledger = lsi.getLedger(ledgerId);
-		String message = csi.updateLedgerList(cid, ledger);
-		if(ledger.getRemainingAmount()==0)
+		if(ledgerList.contains(ledger))
 		{
-			csi.closeLoan(cid);
-		}
-		HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("Attachment","EMI Reciept.pdf");
-		if(message.equals("You have failed to pay consecutive three EMIs and hence you've been marked as defaulter"))
-		{
-			ResponseEntity<String> response = new ResponseEntity<String>(message,HttpStatus.OK);
-			return response;
+			if(ledger.getCurrentMonthEmiStatus().equals("Unpaid"))
+			{
+				String message = csi.updateLedgerList(cid, ledger);
+				if(ledger.getRemainingAmount()<0)
+				{
+					csi.closeLoan(cid);
+				}
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.APPLICATION_PDF);
+				headers.setContentDispositionFormData("Attachment","EMI Reciept.pdf");
+				if(message.equals("You have failed to pay consecutive three EMIs and hence you've been marked as defaulter"))
+				{
+					ResponseEntity<String> response = new ResponseEntity<String>(message,HttpStatus.OK);
+					return response;
+				}
+				else
+				{
+					ResponseEntity<String> response = new ResponseEntity<String>(message,HttpStatus.OK);
+					return response;
+				}
+			}
+			else
+			{
+				throw new InvalidLedgerException("Ledger for this month is already paid or skipped");
+			}
 		}
 		else
 		{
-			ResponseEntity<String> response = new ResponseEntity<String>(message,HttpStatus.OK);
-			return response;
+			throw new InvalidLedgerException("Invalid ledger");
 		}
-		
 		
 	}
 	
@@ -86,10 +102,25 @@ public class HomeController
 	{
 		List<Ledger> ledgerlist = csi.getLedgerList(cid);
 		Customer c=csi.getCustomer(cid);
-		List<Ledger> updatedLedgerList = lsi.skipEMI(ledgerId, ledgerlist,c);
-		csi.updateLedgerList(cid,updatedLedgerList);
-		ResponseEntity<String> response = new ResponseEntity<String>("Updated successfully",HttpStatus.OK);
-		return response;
+		Ledger ledger = lsi.getLedger(ledgerId);
+		if(ledgerlist.contains(ledger))
+		{
+			if(ledger.getCurrentMonthEmiStatus().equals("Unpaid"))
+			{
+				List<Ledger> updatedLedgerList = lsi.skipEMI(ledgerId, ledgerlist,c);
+				csi.updateLedgerList(cid,updatedLedgerList);
+				ResponseEntity<String> response = new ResponseEntity<String>("Updated successfully",HttpStatus.OK);
+				return response;
+			}
+			else
+			{
+				throw new InvalidLedgerException("Ledger for this month is already paid or skipped");
+			}
+		}
+		else
+		{
+			throw new InvalidLedgerException("Invalid ledger");
+		}
 	}
 	@GetMapping("generateDisburesmentletter/{cid}")
 	public ResponseEntity<byte[]> generateDisbursementletter(@PathVariable("cid")int cid) throws MessagingException
@@ -104,5 +135,13 @@ public class HomeController
 		return response;
 	}
 	
-	
+	@PostMapping("disbursementaccount/{cid}/{disbursementAccountNo}")
+	public ResponseEntity<String> addDisbursementAccount(@PathVariable("cid")int cid, @PathVariable("disbursementAccountNo")int disbursementAccountNo)
+	{
+		Customer c = csi.getCustomer(cid);
+		csi.addDisbursementAccount(c,disbursementAccountNo);
+		
+		ResponseEntity<String> response = new ResponseEntity<String>("Account added successfuly",HttpStatus.OK);
+		return response;
+	}
 }

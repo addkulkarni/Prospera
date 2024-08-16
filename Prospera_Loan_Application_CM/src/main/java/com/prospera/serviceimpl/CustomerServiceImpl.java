@@ -1,6 +1,5 @@
 package com.prospera.serviceimpl;
 
-import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,6 +9,8 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,10 @@ public class CustomerServiceImpl implements CustomerServiceI
 	
 	@Autowired
 	JavaMailSender sender;
+	
+	@Autowired
+	ResourceLoader resourceloader;
+	
 	@Override
 	public List<Customer> getAllPendingSanction()
 	{
@@ -53,7 +58,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 	@Override
 	public float calculateEMI(Customer c)
 	{
-		float emiAmount = ((c.getSanction().getLoanamount()*c.getSanction().getInterestRate())/1200)+(c.getSanction().getLoanamount()/c.getSanction().getTenure());
+		float emiAmount = (((c.getSanction().getLoanamount()*c.getSanction().getInterestRate())/1200)+(c.getSanction().getLoanamount()/c.getSanction().getTenure()));
 		c.getSanction().setEmiAmount(emiAmount);
 		c.getEnquiry().setEnquiryStatus("EMI calculated");
 		cr.save(c);
@@ -207,7 +212,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 			String content2 = "\n\nWe hope that you find the terms and conditions of this loan satisfactory "
 					+ "and that it will help you meet your financial needs.\n\nIf you have any questions or need any assistance regarding your loan, "
 					+ "please do not hesitate to contact us.\n\nWe wish you all the best and thank you for choosing us."
-					+ "\n\nSincerely,\n\n" + "Vijay Chaudhari (Credit Manager)";
+					+ "\n\nSincerely,\n\n" + "Team Prospera Finance";
 
 			ByteArrayOutputStream opt = new ByteArrayOutputStream();
 			
@@ -217,7 +222,8 @@ public class CustomerServiceImpl implements CustomerServiceI
 			Image img = null;
 			try {
 
-				img = Image.getInstance("C:\\Users\\gayat\\OneDrive\\Pictures\\prospera.png");
+				Resource loader = resourceloader.getResource("classpath:/Images/prospera.png");
+				img = Image.getInstance(loader.getURL());
 				
 				img.scalePercent(50, 50);
 				img.setAlignment(Element.ALIGN_RIGHT);
@@ -233,12 +239,12 @@ public class CustomerServiceImpl implements CustomerServiceI
 				e1.printStackTrace();
 			}
 
-			Font titlefont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 25);
+			Font titlefont = FontFactory.getFont(FontFactory.COURIER, 25);
 			Paragraph titlepara = new Paragraph(title, titlefont);
 			titlepara.setAlignment(Element.ALIGN_CENTER);
 			document.add(titlepara);
 
-			Font titlefont2 = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10);
+			Font titlefont2 = FontFactory.getFont(FontFactory.COURIER, 10);
 			Paragraph paracontent1 = new Paragraph(content1, titlefont2);
 			document.add(paracontent1);
 
@@ -251,16 +257,16 @@ public class CustomerServiceImpl implements CustomerServiceI
 			cell.setBackgroundColor(CMYKColor.WHITE);
 			cell.setPadding(5);
 
-			Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+			Font font = FontFactory.getFont(FontFactory.COURIER);
 			font.setColor(5, 5, 161);
 
-			Font font1 = FontFactory.getFont(FontFactory.HELVETICA);
+			Font font1 = FontFactory.getFont(FontFactory.COURIER);
 			font.setColor(5, 5, 161);
 
 			cell.setPhrase(new Phrase("Loan Amount Sanctioned", font));
 			table.addCell(cell);
 
-			cell.setPhrase(new Phrase(String.valueOf("₹ " + cd1.getSanction().getLoanamount()),font1));
+			cell.setPhrase(new Phrase(String.valueOf("Rs." + cd1.getSanction().getLoanamount()),font1));
 			table.addCell(cell);
 
 			cell.setPhrase(new Phrase("Loan Tenure", font));
@@ -290,7 +296,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 
 			document.add(table);
 
-			Font titlefont3 = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10);
+			Font titlefont3 = FontFactory.getFont(FontFactory.COURIER, 10);
 			Paragraph paracontent2 = new Paragraph(content2, titlefont3);
 			document.add(paracontent2);
 			document.close();

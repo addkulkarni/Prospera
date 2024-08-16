@@ -12,6 +12,8 @@ import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -32,7 +34,6 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.prospera.exception.InvalidCustomerException;
 import com.prospera.model.Customer;
-import com.prospera.model.Disbursement;
 import com.prospera.model.Ledger;
 import com.prospera.model.Sanction;
 import com.prospera.repository.CustomerRepository;
@@ -49,6 +50,9 @@ public class CustomerServiceImpl implements CustomerServiceI
 	
 	@Autowired
 	JavaMailSender sender;
+	
+	@Autowired
+	ResourceLoader resourceloader;
 	
 	@Override
 	public List<Customer> getAllForwaredtoAH()
@@ -73,15 +77,6 @@ public class CustomerServiceImpl implements CustomerServiceI
 				c.getEnquiry().setEnquiryStatus("Loan Disbursed");
 				c.getEnquiry().setLoanStatus("Loan Disbursed");
 				cr.save(c);
-				
-				MimeMessage mm = sender.createMimeMessage();
-				MimeMessageHelper helper = new MimeMessageHelper(mm,true);
-				helper.setTo(c.getEmail());
-				helper.setSubject("Loan Disbursement Notification");
-				helper.setText("Hello "+c.getFirstName()+",\nYour loan amount of rs. "+c.getSanction().getLoanamount()+"has been disbursed to the bank account.\n"
-						+ "Attached to this email is the reciept for the transaction.\nPlease find the attached document\nTeam Prospera Finance");
-				helper.addAttachment("Reciept.pdf", new ByteArrayResource(c.getDoc().getAdhar()));
-				sender.send(mm);
 				return c.getSanction().getLoanamount();
 			}
 			else
@@ -234,14 +229,6 @@ public class CustomerServiceImpl implements CustomerServiceI
 	{
 		if(c!=null) 
 		{
-//			cd1.getSanction().setDate(new Date());
-//			cd1.getSanction().setSanctionId(s.getSanctionId());
-//			cd1.getSanction().setFirstName(cd1.getFirstName());
-//			cd1.getSanction().setLastName(cd1.getLastName());
-//			cd1.getSanction().setLoanamount(s.getLoanamount());
-//			cd1.getSanction().setTenure(s.getTenure());
-//			cd1.getSanction().setInterestRate(s.getInterestRate());
-//			cd1.getSanction().setEmiAmount(s.getEmiAmount());
 	
 			String title = "Prospera Finance Ltd.";
 
@@ -262,8 +249,8 @@ public class CustomerServiceImpl implements CustomerServiceI
 			Image img = null;
 			try {
 
-				img = Image.getInstance("C:\\Users\\omkar\\Desktop\\Git\\prosperalogo.jpeg");
-				
+//				Resource loader = resourceloader.getResource("classpath:/Images/prospera.png");
+				img = Image.getInstance("C:\\Users\\addku\\Desktop\\ProsperaConfig\\prospera.png");
 				img.scalePercent(50, 50);
 				img.setAlignment(Element.ALIGN_RIGHT);
 				document.add(img);
@@ -305,7 +292,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 			cell.setPhrase(new Phrase("EMI Amount Paid", font));
 			table.addCell(cell);
 
-			cell.setPhrase(new Phrase(String.valueOf("₹ " + c.getSanction().getEmiAmount()),font1));
+			cell.setPhrase(new Phrase(String.valueOf("Rs." + c.getSanction().getEmiAmount()),font1));
 			table.addCell(cell);
 
 			cell.setPhrase(new Phrase("Transaction ID", font));
@@ -350,12 +337,12 @@ public class CustomerServiceImpl implements CustomerServiceI
 
 			String content1 = "\n\n Dear " + cd1.getFirstName()
 					+ ","
-					+ "\nProspera Finance Ltd. is Happy to informed you that your Disbursement Amount has been completed . ";
+					+ "\nProspera Finance Ltd. is happy to inform you that your amount disbursement process has been completed. ";
 
 			String content2 = "\n\nThe funds have been transferred to your designated account and should be available for use shortly. "
-					+ "Should you have any questions or require further assistance, please do not hesitate to contact us., "
-					+ "please do not hesitate to contact us.\n\nWe wish you all the best and thank you for choosing us."
-					+ "\n\nSincerely,\n\n" + "Vijay Chaudhari (Credit Manager)";
+					+ "Should you have any questions or require further assistance, please do not hesitate to contact us."
+					+"\n\nWe wish you all the best and thank you for choosing us."
+					+ "\n\nSincerely,\n\n" + "Team Prospera Finance";
 
 			ByteArrayOutputStream opt = new ByteArrayOutputStream();
 			
@@ -365,7 +352,8 @@ public class CustomerServiceImpl implements CustomerServiceI
 			Image img = null;
 			try {
 
-				img = Image.getInstance("C:\\Users\\addku\\Desktop\\ProsperaConfig\\prospera.png");
+				Resource loader = resourceloader.getResource("classpath:/Images/prospera.png");
+				img = Image.getInstance(loader.getURL());
 				
 				img.scalePercent(50, 50);
 				img.setAlignment(Element.ALIGN_RIGHT);
@@ -381,12 +369,12 @@ public class CustomerServiceImpl implements CustomerServiceI
 				e1.printStackTrace();
 			}
 
-			Font titlefont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 25);
+			Font titlefont = FontFactory.getFont(FontFactory.COURIER, 25);
 			Paragraph titlepara = new Paragraph(title, titlefont);
 			titlepara.setAlignment(Element.ALIGN_CENTER);
 			document.add(titlepara);
 
-			Font titlefont2 = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10);
+			Font titlefont2 = FontFactory.getFont(FontFactory.COURIER, 10);
 			Paragraph paracontent1 = new Paragraph(content1, titlefont2);
 			document.add(paracontent1);
 
@@ -399,10 +387,10 @@ public class CustomerServiceImpl implements CustomerServiceI
 			cell.setBackgroundColor(CMYKColor.WHITE);
 			cell.setPadding(5);
 
-			Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+			Font font = FontFactory.getFont(FontFactory.COURIER);
 			font.setColor(5, 5, 161);
 
-			Font font1 = FontFactory.getFont(FontFactory.HELVETICA);
+			Font font1 = FontFactory.getFont(FontFactory.COURIER);
 			font.setColor(5, 5, 161);
 
 			cell.setPhrase(new Phrase("Disbursement ID", font));
@@ -414,20 +402,13 @@ public class CustomerServiceImpl implements CustomerServiceI
 			cell.setPhrase(new Phrase("Total Disbursement Amount", font));
 			table.addCell(cell);
 
-			cell.setPhrase(new Phrase(String.valueOf("₹ " + cd1.getSanction().getLoanamount()),font1));
+			cell.setPhrase(new Phrase(String.valueOf("Rs." + cd1.getSanction().getLoanamount()),font1));
 			table.addCell(cell);
 
 			cell.setPhrase(new Phrase("Disbursement Account Number", font));
 			table.addCell(cell);
-                 
-//			 set random DisbursementAccountNo
-			 int disAcc=new Random().nextInt(10000000,999999999);
-			 Disbursement d = new Disbursement();
-			 d.setDisbursementAccountNo(disAcc);;
-			 cd1.setDisbursement(d);
-			 cr.save(cd1);
 			 
-			cell.setPhrase(new Phrase(String.valueOf(disAcc), font1));
+			cell.setPhrase(new Phrase(String.valueOf(cd1.getDisbursement().getDisbursementAccountNo()), font1));
 			table.addCell(cell);
 
 			cell.setPhrase(new Phrase("Disbursement timestamp", font));
@@ -438,7 +419,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 
 			document.add(table);
 
-			Font titlefont3 = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10);
+			Font titlefont3 = FontFactory.getFont(FontFactory.COURIER, 10);
 			Paragraph paracontent2 = new Paragraph(content2, titlefont3);
 			document.add(paracontent2);
 			document.close();
@@ -467,7 +448,15 @@ public class CustomerServiceImpl implements CustomerServiceI
 	@Override
 	public Customer getCustomer(int cid) {
 		
-		return cr.findById(cid).get();
+		Optional<Customer> o = cr.findById(cid);
+		if(!(o.isPresent()))
+		{
+			throw new InvalidCustomerException("You have selected invalid customer");
+		}
+		else
+		{
+			return o.get();
+		}
 	}
 
 	@Override
@@ -487,6 +476,14 @@ public class CustomerServiceImpl implements CustomerServiceI
 		sender.send(msg);
 		cr.save(c);
 	}
+
+	@Override
+	public void addDisbursementAccount(Customer c, int disbursementAccountNo)
+	{
+		c.getDisbursement().setDisbursementAccountNo(disbursementAccountNo);
+		cr.save(c);
+	}
+
 
 	
 	
