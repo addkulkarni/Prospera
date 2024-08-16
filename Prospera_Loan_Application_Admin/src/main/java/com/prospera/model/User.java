@@ -18,8 +18,8 @@ public class User {
 	private String firstname;
 	private String lastname;
 	private String password;
-	private String UserType;
-	private String UserEmail;
+	private String userType;
+	private String userEmail;
 	@Lob
 	@Column(length=999999999)
 	private byte[] photo;

@@ -39,17 +39,19 @@ public class HomeController {
      public ResponseEntity<String> saveUser(@RequestPart("photo") MultipartFile photo,@RequestPart("data") String data)
  	{
     	 ObjectMapper om=new ObjectMapper();
-    	 try {
+    	try {
     		 User u = om.readValue(data, User.class);
     		 u.setPhoto(photo.getBytes());
-    		 ResponseEntity<String> response = usi.saveUser(u);
+    		 usi.saveUser(u);
+    		 ResponseEntity<String> response = new ResponseEntity<>("data Saved",HttpStatus.OK);
     	 	 return response;
 			 } 
     	 catch (Exception e) 
     	 	{
 			 e.printStackTrace();
-			 return null;
-    	 	}	
+			 return new ResponseEntity<>("failed...",HttpStatus.EXPECTATION_FAILED);
+    	 	}
+    	 	
  	}
      
     @GetMapping("/loginByUsernameAndPassword/{username}/{password}")
@@ -101,7 +103,12 @@ public class HomeController {
  			List<Customer> l = csi.getAllCustomer();
  			return new ResponseEntity<>(l, HttpStatus.OK);
  	}
- 		
+ 	@GetMapping("getAllUsers")
+ 	public ResponseEntity<List<User>> getAllUsers()
+ 	{
+ 		List<User> l = usi.getAllUsers();
+			return new ResponseEntity<>(l, HttpStatus.OK);
+ 	}
  	
  	
  	
