@@ -22,22 +22,16 @@ public class UserServiceImpl implements UserServiceI{
 	@Autowired
 	UserRepository ur;
 	
-	
-	
-	
-	
 	@Override
-	public ResponseEntity<String> saveUser( User u) {
+	public void saveUser( User u) {
 		ur.save(u);
-		ResponseEntity<String> response= new ResponseEntity<String>("User added",HttpStatus.OK);
-		return response;
+		
 	}
 
 
 	@Override
 	public User getByUsernameAndPassword(String username, String password) {
 		User us=ur.findByUsernameAndPassword(username,password);
-//		        List<Customer> cust=cr.findAll();
 		        
 		if(us==null)
 		{
@@ -47,7 +41,11 @@ public class UserServiceImpl implements UserServiceI{
 		}
 
 
-	
+	@Override
+	public List<User> getAllUsers() {
+		
+		return ur.findAll();
+	}
 	}
 
 

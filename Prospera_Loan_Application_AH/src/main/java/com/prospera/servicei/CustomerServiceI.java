@@ -16,10 +16,20 @@ public interface CustomerServiceI
 
 	void createLedger(int cid);
 
-	String updateLedgerList(int cid, Ledger ledger);
+	String updateLedgerList(int cid, Ledger ledger) throws Exception;
 
 	List<Ledger> getLedgerList(int cid);
 
 	void updateLedgerList(int cid, List<Ledger> updatedLedgerList);
 
+	
+
+	byte[] generateDisbursementletter(int cid) throws MessagingException;
+
+	Customer getCustomer(int cid);
+
+	void closeLoan(int cid);
+
+
 }
+
