@@ -198,121 +198,136 @@ public class CustomerServiceImpl implements CustomerServiceI
 	public byte[] generateSanctionLetter(int cid)
 	{
 		Optional<Customer> cd = cr.findById(cid);
-		Customer cd1=cd.get();
-		if(cd.isPresent()) 
-		{	
-			String title = "Prospera Finance Ltd.";
-
-			Document document = new Document(PageSize.A4);
-
-			String content1 = "\n\n Dear " + cd1.getFirstName()
-					+ ","
-					+ "\nProspera Finance Ltd. is Happy to informed you that your loan application has been approved. ";
-
-			String content2 = "\n\nWe hope that you find the terms and conditions of this loan satisfactory "
-					+ "and that it will help you meet your financial needs.\n\nIf you have any questions or need any assistance regarding your loan, "
-					+ "please do not hesitate to contact us.\n\nWe wish you all the best and thank you for choosing us."
-					+ "\n\nSincerely,\n\n" + "Team Prospera Finance";
-
-			ByteArrayOutputStream opt = new ByteArrayOutputStream();
-			
-			PdfWriter.getInstance(document, opt);
-			document.open();
-
-			Image img = null;
-			try {
-
-				Resource loader = resourceloader.getResource("classpath:/Images/prospera.png");
-				img = Image.getInstance(loader.getURL());
-				
-				img.scalePercent(50, 50);
-				img.setAlignment(Element.ALIGN_RIGHT);
-				document.add(img);
-
-			} 
-			catch (BadElementException e1)
-			{
-				e1.printStackTrace();
-			}
-			catch (IOException e1) 
-			{
-				e1.printStackTrace();
-			}
-
-			Font titlefont = FontFactory.getFont(FontFactory.COURIER, 25);
-			Paragraph titlepara = new Paragraph(title, titlefont);
-			titlepara.setAlignment(Element.ALIGN_CENTER);
-			document.add(titlepara);
-
-			Font titlefont2 = FontFactory.getFont(FontFactory.COURIER, 10);
-			Paragraph paracontent1 = new Paragraph(content1, titlefont2);
-			document.add(paracontent1);
-
-			PdfPTable table = new PdfPTable(2);
-			table.setWidthPercentage(100f);
-			table.setWidths(new int[] { 2, 2 });
-			table.setSpacingBefore(10);
-
-			PdfPCell cell = new PdfPCell();
-			cell.setBackgroundColor(CMYKColor.WHITE);
-			cell.setPadding(5);
-
-			Font font = FontFactory.getFont(FontFactory.COURIER);
-			font.setColor(5, 5, 161);
-
-			Font font1 = FontFactory.getFont(FontFactory.COURIER);
-			font.setColor(5, 5, 161);
-
-			cell.setPhrase(new Phrase("Loan Amount Sanctioned", font));
-			table.addCell(cell);
-
-			cell.setPhrase(new Phrase(String.valueOf("Rs." + cd1.getSanction().getLoanamount()),font1));
-			table.addCell(cell);
-
-			cell.setPhrase(new Phrase("Loan Tenure", font));
-			table.addCell(cell);
-
-			cell.setPhrase(new Phrase(String.valueOf(cd1.getSanction().getTenure()), font1));
-			table.addCell(cell);
-
-			cell.setPhrase(new Phrase("Interest Rate", font));
-			table.addCell(cell);
-
-			cell.setPhrase(new Phrase(String.valueOf(cd1.getSanction().getInterestRate()) + " %", font1));
-			table.addCell(cell);
-
-			cell.setPhrase(new Phrase("Sanction letter generated Date", font));
-			table.addCell(cell);
-
-			cd1.getSanction().setDate(new Date());
-			cell.setPhrase(new Phrase(String.valueOf(cd1.getSanction().getDate()), font1));
-			table.addCell(cell);
-			
-			cell.setPhrase(new Phrase("EMI Amount", font));
-			table.addCell(cell);
-			
-			cell.setPhrase(new Phrase(String.valueOf(cd1.getSanction().getEmiAmount()),font1));
-			table.addCell(cell);
-
-			document.add(table);
-
-			Font titlefont3 = FontFactory.getFont(FontFactory.COURIER, 10);
-			Paragraph paracontent2 = new Paragraph(content2, titlefont3);
-			document.add(paracontent2);
-			document.close();
-			
-			
-			ByteArrayInputStream byt = new ByteArrayInputStream(opt.toByteArray());
-			byte[] bytes = byt.readAllBytes();
-			cd1.getSanction().setSanctionLetter(bytes);
-			cd1.getEnquiry().setEnquiryStatus("Sanction Letter Generated");
-			cr.save(cd1);
-			return bytes;
-		}
-		else 
+		if(!(cd.isPresent()))
 		{
-			return null;
-		}	
+			throw new InvalidCustomerException("Customer is not present in database");
+		}
+		else
+		{
+			Customer cd1=cd.get();
+			if(cd.isPresent()) 
+			{	
+				if(cd.get().getEnquiry().getEnquiryStatus().equals("EMI calculated"))
+				{
+					String title = "Prospera Finance Ltd.";
+	
+					Document document = new Document(PageSize.A4);
+	
+					String content1 = "\n\n Dear " + cd1.getFirstName()
+						+ ","
+						+ "\nProspera Finance Ltd. is Happy to informed you that your loan application has been approved. ";
+	
+					String content2 = "\n\nWe hope that you find the terms and conditions of this loan satisfactory "
+						+ "and that it will help you meet your financial needs.\n\nIf you have any questions or need any assistance regarding your loan, "
+						+ "please do not hesitate to contact us.\n\nWe wish you all the best and thank you for choosing us."
+						+ "\n\nSincerely,\n\n" + "Team Prospera Finance";
+	
+					ByteArrayOutputStream opt = new ByteArrayOutputStream();
+				
+					PdfWriter.getInstance(document, opt);
+					document.open();
+	
+					Image img = null;
+					try 
+					{
+	
+						Resource loader = resourceloader.getResource("classpath:/Images/prospera.png");
+						img = Image.getInstance(loader.getURL());
+					
+						img.scalePercent(50, 50);
+						img.setAlignment(Element.ALIGN_RIGHT);
+						document.add(img);
+					
+					} 
+					catch (BadElementException e1)
+					{
+						e1.printStackTrace();
+					}
+					catch (IOException e1) 
+					{
+						e1.printStackTrace();
+					}
+		
+					Font titlefont = FontFactory.getFont(FontFactory.COURIER, 25);
+					Paragraph titlepara = new Paragraph(title, titlefont);
+					titlepara.setAlignment(Element.ALIGN_CENTER);
+					document.add(titlepara);
+		
+					Font titlefont2 = FontFactory.getFont(FontFactory.COURIER, 10);
+					Paragraph paracontent1 = new Paragraph(content1, titlefont2);
+					document.add(paracontent1);
+		
+					PdfPTable table = new PdfPTable(2);
+					table.setWidthPercentage(100f);
+					table.setWidths(new int[] { 2, 2 });
+					table.setSpacingBefore(10);
+		
+					PdfPCell cell = new PdfPCell();
+					cell.setBackgroundColor(CMYKColor.WHITE);
+					cell.setPadding(5);
+		
+					Font font = FontFactory.getFont(FontFactory.COURIER);
+					font.setColor(5, 5, 161);
+		
+					Font font1 = FontFactory.getFont(FontFactory.COURIER);
+					font.setColor(5, 5, 161);
+		
+					cell.setPhrase(new Phrase("Loan Amount Sanctioned", font));
+					table.addCell(cell);
+		
+					cell.setPhrase(new Phrase(String.valueOf("Rs." + cd1.getSanction().getLoanamount()),font1));
+					table.addCell(cell);
+		
+					cell.setPhrase(new Phrase("Loan Tenure", font));
+					table.addCell(cell);
+		
+					cell.setPhrase(new Phrase(String.valueOf(cd1.getSanction().getTenure()), font1));
+					table.addCell(cell);
+		
+					cell.setPhrase(new Phrase("Interest Rate", font));
+					table.addCell(cell);
+		
+					cell.setPhrase(new Phrase(String.valueOf(cd1.getSanction().getInterestRate()) + " %", font1));
+					table.addCell(cell);
+		
+					cell.setPhrase(new Phrase("Sanction letter generated Date", font));
+					table.addCell(cell);
+		
+					cd1.getSanction().setDate(new Date());
+					cell.setPhrase(new Phrase(String.valueOf(cd1.getSanction().getDate()), font1));
+					table.addCell(cell);
+				
+					cell.setPhrase(new Phrase("EMI Amount", font));
+					table.addCell(cell);
+					
+					cell.setPhrase(new Phrase(String.valueOf(cd1.getSanction().getEmiAmount()),font1));
+					table.addCell(cell);
+		
+					document.add(table);
+		
+					Font titlefont3 = FontFactory.getFont(FontFactory.COURIER, 10);
+					Paragraph paracontent2 = new Paragraph(content2, titlefont3);
+					document.add(paracontent2);
+					document.close();
+					
+					
+					ByteArrayInputStream byt = new ByteArrayInputStream(opt.toByteArray());
+					byte[] bytes = byt.readAllBytes();
+					cd1.getSanction().setSanctionLetter(bytes);
+					cd1.getEnquiry().setEnquiryStatus("Sanction Letter Generated");
+					cr.save(cd1);
+					return bytes;
+				}
+				else
+				{
+					throw new InvalidCustomerException("Invalid customer or EMI not yet calculated");
+				}
+			}
+			else 
+			{
+				return null;
+			}
+		}
 	}
 
 
