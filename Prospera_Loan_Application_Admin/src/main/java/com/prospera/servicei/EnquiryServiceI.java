@@ -14,6 +14,8 @@ public interface EnquiryServiceI {
 
 	List<Enquiry> getallenquiries();
 
+	List<Enquiry> getByEnquiryFirstname();
+
 }
 
 

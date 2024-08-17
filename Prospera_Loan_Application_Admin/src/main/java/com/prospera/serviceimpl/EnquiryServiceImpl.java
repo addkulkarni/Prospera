@@ -50,5 +50,11 @@ public class EnquiryServiceImpl implements EnquiryServiceI {
 		return l;
 		
 	}
+	@Override
+	public List<Enquiry> getByEnquiryFirstname() 
+	{
+		List<Enquiry> l=er.findAll();
+		return l;
+	}
 
 }
