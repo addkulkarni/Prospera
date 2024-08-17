@@ -1,6 +1,8 @@
 package com.prospera.controller;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.prospera.model.Cibil;
 import com.prospera.model.Enquiry;
 import com.prospera.servicei.EnquiryServiceI;
 
@@ -52,7 +55,32 @@ public class EnquiryController {
 	public ResponseEntity<List<Enquiry>> getallenquiry ()
 	{
 		List<Enquiry> l = esi.getallenquiry();
+		//List<Enquiry> sortedlistEnquiries = l.stream().sorted(Comparator.comparing(Enquiry::getFirstName).reversed()).collect(Collectors.toList());
 		return new ResponseEntity<>(l, HttpStatus.OK);
+	}
+	
+	@GetMapping("/sortByLoanAmount")
+	public ResponseEntity<List<Enquiry>> sortByLoanAmount ()
+	{
+		List<Enquiry> l = esi.getallenquiry();
+		List<Enquiry> sortedlistEnquiries = l.stream().sorted(Comparator.comparing(Enquiry::getLoanamount).reversed()).collect(Collectors.toList());
+		return new ResponseEntity<>(sortedlistEnquiries, HttpStatus.OK);
+	}
+	
+	@GetMapping("/sortByDate")
+	public ResponseEntity<List<Enquiry>> sortByDate()
+	{
+		List<Enquiry> l = esi.getallenquiry();
+		List<Enquiry> sortedlistEnquiries = l.stream().sorted(Comparator.comparing(Enquiry::getTimeStamp)).collect(Collectors.toList());
+		return new ResponseEntity<>(sortedlistEnquiries, HttpStatus.OK);
+	}
+	
+	@GetMapping("/sortByCibil")
+	public ResponseEntity<List<Enquiry>> sortByCibil()
+	{
+		List<Enquiry> l = esi.getallenquiry();
+		List<Enquiry> sortedlistEnquiries = l.stream().sorted(Comparator.comparing(Enquiry::getCibil, Comparator.comparing(Cibil::getCibilscore))).collect(Collectors.toList());
+		return new ResponseEntity<>(sortedlistEnquiries, HttpStatus.OK);
 	}
 	
 	@GetMapping("/getbyloanstatus/{loanStatus}")
@@ -83,7 +111,7 @@ public class EnquiryController {
 		return response;
 	}
 	
-	@GetMapping("forwardtooe/{enquiryID}")
+	@GetMapping("forwardtoOE/{enquiryID}")
 	public ResponseEntity<String> forwardToOe(@PathVariable("enquiryID")int enquiryID)
 	{
 		ResponseEntity<String> response = esi.forwardToOE(enquiryID);
