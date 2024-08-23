@@ -59,7 +59,7 @@ public class EnquiryServiceImpl implements EnquiryServiceI{
 		}
 		catch(MailException exception)
 		{
-			System.out.println("Email is incorrect");
+			System.out.println("email is incorrect");
 		}
 		return response;
 	}
