@@ -19,6 +19,7 @@ import com.prospera.model.Document;
 import com.prospera.model.Employment;
 import com.prospera.model.LocalAddress;
 import com.prospera.model.PerAddress;
+import com.prospera.model.Sanction;
 import com.prospera.repository.CustomerRepository;
 import com.prospera.servicei.CustomerServiceI;
 
@@ -195,4 +196,25 @@ public class CustomerServiceImpl implements CustomerServiceI
 	{
 		cr.save(c);
 	}
+
+	@Override
+	public String rejectSanctionDetails(String username, String password)
+	{
+		Customer c = cr.findByUsernameAndPassword(username,password);
+		c.getEnquiry().setEnquiryStatus("Sanction rejected by customer");
+		cr.save(c);
+		return "Sanction rejected by customer";
+	}
+
+	@Override
+	public String approveSanctionDetails(String username, String password)
+	{
+		Customer c = cr.findByUsernameAndPassword(username,password);
+		c.getEnquiry().setEnquiryStatus("Sanction approved by customer");
+		c.getEnquiry().setLoanStatus("Loan Approved");
+		cr.save(c);
+		return "Sanction approved by customer";
+	}
+
+	
 }

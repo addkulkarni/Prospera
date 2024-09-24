@@ -20,6 +20,7 @@ import com.prospera.model.Customer;
 import com.prospera.model.Document;
 import com.prospera.model.Employment;
 import com.prospera.model.Enquiry;
+import com.prospera.model.Sanction;
 import com.prospera.servicei.CustomerServiceI;
 
 @RestController
@@ -84,6 +85,22 @@ public class HomeController
 	public ResponseEntity<Customer> getPersonalDetails(@PathVariable("username")String username, @PathVariable("password")String password)
 	{
 		ResponseEntity<Customer> response = csi.getPersonalDetails(username,password);
+		return response;
+	}
+	
+	@GetMapping("rejectsanctiondetails/{username}/{password}")
+	public ResponseEntity<String> rejectSanctionDetails(@PathVariable("username")String username,@PathVariable("password")String password)
+	{
+		String msg = csi.rejectSanctionDetails(username,password);
+		ResponseEntity<String> response = new ResponseEntity<>(msg,HttpStatus.OK);
+		return response;
+	}
+	
+	@GetMapping("approvesanctiondetails/{username}/{password}")
+	public ResponseEntity<String> approveSanctionDetails(@PathVariable("username")String username,@PathVariable("password")String password)
+	{
+		String msg = csi.approveSanctionDetails(username,password);
+		ResponseEntity<String> response = new ResponseEntity<>(msg,HttpStatus.OK);
 		return response;
 	}
 	

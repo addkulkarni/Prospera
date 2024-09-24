@@ -9,6 +9,7 @@ import com.prospera.model.Bank;
 import com.prospera.model.Customer;
 import com.prospera.model.Document;
 import com.prospera.model.Employment;
+import com.prospera.model.Sanction;
 
 public interface CustomerServiceI
 {
@@ -33,5 +34,9 @@ public interface CustomerServiceI
 	ResponseEntity<Customer> getPersonalDetails(String username, String password);
 
 	void saveData(Customer c);
+
+	String rejectSanctionDetails(String username,String password);
+
+	String approveSanctionDetails(String username, String password);
 
 }
