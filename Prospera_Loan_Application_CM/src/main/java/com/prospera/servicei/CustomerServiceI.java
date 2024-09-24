@@ -24,7 +24,7 @@ public interface CustomerServiceI
 
 	Customer getForRejectSanction(int cid);
 
-	void sanction(Customer c, String enquiryStatus);
+	String sanction(Customer c, String enquiryStatus);
  
 	void emailSanctionLetter(int cid) throws Exception;
 
