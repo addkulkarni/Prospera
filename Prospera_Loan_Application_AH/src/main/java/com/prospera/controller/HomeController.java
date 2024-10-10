@@ -107,6 +107,7 @@ public class HomeController
 		{
 			if(ledger.getCurrentMonthEmiStatus().equals("Unpaid"))
 			{
+				
 				List<Ledger> updatedLedgerList = lsi.skipEMI(ledgerId, ledgerlist,c);
 				csi.updateLedgerList(cid,updatedLedgerList);
 				ResponseEntity<String> response = new ResponseEntity<String>("Updated successfully",HttpStatus.OK);
