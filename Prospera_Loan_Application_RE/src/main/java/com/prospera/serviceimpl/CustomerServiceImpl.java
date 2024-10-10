@@ -16,6 +16,7 @@ import com.prospera.exception.InvalidCustomerException;
 import com.prospera.exception.InvalidEnquiryIDException;
 import com.prospera.model.Customer;
 import com.prospera.model.Enquiry;
+import com.prospera.model.User;
 import com.prospera.repository.CustomerRepository;
 import com.prospera.servicei.CustomerServiceI;
 
@@ -29,8 +30,9 @@ public class CustomerServiceImpl implements CustomerServiceI
 	private JavaMailSender sender;
 	
 	@Override
-	public void saveData(Enquiry e, Customer c)
+	public User saveData(Enquiry e, Customer c)
 	{
+		User u = new User();
 		String string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 		Random r = new Random();
 		String username = "";
@@ -56,6 +58,15 @@ public class CustomerServiceImpl implements CustomerServiceI
 		c.setMobileNo(e.getMobileNo());
 		c.setPancardNo(e.getPancardNo());
 		
+		//setting user details for login
+		u.setFirstname(e.getFirstName());
+		u.setLastname(e.getLastName());
+		u.setPassword(password);
+		u.setUserEmail(e.getEmail());
+		u.setUsername(username);
+		u.setUserType("Customer");
+		u.setPhoto(c.getDoc().getPhoto());
+		
 		cr.save(c);
 		  try
 		  {
@@ -69,6 +80,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 		  {
 			     exception.getMessage(); 
 		  }
+		  return u;
 	}
 
 	@Override

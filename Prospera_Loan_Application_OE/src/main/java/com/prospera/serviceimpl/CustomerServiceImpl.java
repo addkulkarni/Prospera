@@ -59,7 +59,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 			else if(loanStatus.equals("approved"))
 			{
 				e.setLoanStatus("Verification Approved");
-				e.setEnquiryStatus("Verification Approved");
+				e.setEnquiryStatus("Pending Sanction");
 				returnMessage = "Verification has been approved";
 				msg.setText("Hello "+c.getFirstName()+",\nYour loan document verification has been approved.\nPlease contact the Relationship Manager for further course of action and a smooth experience.\nHave a nice day.\nTeam Propera Finance");
 				msg.setTo(c.getEmail());

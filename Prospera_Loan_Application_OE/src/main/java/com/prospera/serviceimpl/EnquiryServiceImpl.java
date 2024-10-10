@@ -1,5 +1,6 @@
 package com.prospera.serviceimpl;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +56,7 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 			{
 				c.setCibilStatus("Approved");
 				en.setLoanStatus("Cibil Approved");
-				en.setEnquiryStatus("Cibil Check Cleared");
+				en.setEnquiryStatus("Pending Registration");
 			}
 			else
 			{
@@ -131,6 +132,14 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 		{
 				throw new InvalidIdException("Invalid Enquiry");
 		}
+	}
+
+	@Override
+	public List<Enquiry> getOeTasks()
+	{
+		List<Enquiry> enquiries = er.findByEnquiryStatusIn(Arrays.asList("Forwarded to OE", "Pending Verification"));
+
+		return enquiries;
 	}
 
 	

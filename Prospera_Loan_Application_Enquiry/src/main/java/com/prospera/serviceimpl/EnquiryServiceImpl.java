@@ -33,7 +33,7 @@ public class EnquiryServiceImpl implements EnquiryServiceI{
 	public ResponseEntity<String> addEnquiry(Enquiry e)
 	{
 		e.setLoanStatus("Pending");
-		e.setEnquiryStatus("Initiated");
+		e.setEnquiryStatus("Forwarded to OE");
 		e.setTimeStamp(new Date());
 		Optional<Enquiry> o1 = er.findByPancardNo(e.getPancardNo());
 //		Remove this comment to enable unique email ids in DB
@@ -54,7 +54,9 @@ public class EnquiryServiceImpl implements EnquiryServiceI{
 		  SimpleMailMessage message=new SimpleMailMessage();
 		  message.setTo(e.getEmail());
 		  message.setSubject("Welcome to Prospera Finance");
-		  message.setText("Hello "+ e.getFirstName()+",\nWe are pleased to know about your interest in Prospera Loans. We will keep you posted throughout the loan process.\nHave a nice day.\nThanks for choosing Prospera Finance.\nTeam Prospera Finance");
+
+		  message.setText("Hello "+ e.getFirstName()+",\nWe are pleased to know about your interest in Prospera Loans. Your Enquiry has been forworded to Operational Executive for CIBIL score check.\nWe will contact you via email as soon as we have your CIBIL score with us.\nWe will keep you posted throughout the loan process.\nHave a nice day.\nTeam Prospera Finance");
+
 		  sender.send(message);
 		}
 		catch(MailException exception)
