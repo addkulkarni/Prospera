@@ -20,8 +20,10 @@ import com.prospera.exception.InvalidEnquiryIDException;
 import com.prospera.model.Customer;
 import com.prospera.model.Document;
 import com.prospera.model.Enquiry;
+import com.prospera.model.User;
 import com.prospera.servicei.CustomerServiceI;
 import com.prospera.servicei.EnquiryServiceI;
+import com.prospera.servicei.UserServiceI;
 
 @RestController
 @RequestMapping("re")
@@ -32,6 +34,9 @@ public class HomeController
 	
 	@Autowired
 	EnquiryServiceI esi;
+	
+	@Autowired
+	UserServiceI usi;
 	
 	@PostMapping(value = "savedata", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> savedata(@RequestPart("data") String data, @RequestPart("adhar")MultipartFile adhar, @RequestPart("pan")MultipartFile pan, @RequestPart("photo")MultipartFile photo, @RequestPart("sign")MultipartFile sign, @RequestPart("incomeCertificate")MultipartFile incomeCertificate, @RequestPart("salarySlip")MultipartFile salarySlip) throws Exception
@@ -61,9 +66,14 @@ public class HomeController
 			else
 			{
 				c.setDoc(d);
-				c.setEnquiry(o.get());
-				csi.saveData(o.get(),c);
-				esi.setEnquiryStatus(eid);
+				Enquiry e=o.get();
+				//changed here for direct forwarding
+				e.setEnquiryStatus("Pending Verification");
+				c.setEnquiry(e);
+				User u = csi.saveData(o.get(),c);
+				usi.setUser(u);
+				//changed here for direct forwarding
+				//esi.setEnquiryStatus(eid);
 				ResponseEntity<String> response = new ResponseEntity<>("Data saved succcesfully", HttpStatus.OK);
 				return response;
 			}

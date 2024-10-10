@@ -22,6 +22,7 @@ import com.prospera.model.Employment;
 import com.prospera.model.Enquiry;
 import com.prospera.model.Sanction;
 import com.prospera.servicei.CustomerServiceI;
+import com.prospera.servicei.UserServiceI;
 
 @RestController
 @RequestMapping("login")
@@ -29,6 +30,8 @@ public class HomeController
 {
 	@Autowired
 	CustomerServiceI csi;
+	@Autowired
+	UserServiceI usi;
 	
 	@GetMapping("login/{username}/{password}")
 	public ResponseEntity<Customer> login(@PathVariable("username")String username, @PathVariable("password")String password)
@@ -42,6 +45,7 @@ public class HomeController
 	public ResponseEntity<String> changePassword(@PathVariable("username")String username, @PathVariable("password")String password)
 	{
 		csi.changePassword(username,password);
+		usi.changePassword(username,password);
 		ResponseEntity<String> response = new ResponseEntity<String>("Password changed successfully",HttpStatus.OK);
 		return response;
 	}
@@ -49,6 +53,7 @@ public class HomeController
 	@GetMapping("forgotpassword/{username}")
 	public ResponseEntity<String> forgotPassword(@PathVariable("username")String username)
 	{		
+		
 		ResponseEntity<String> response = csi.forgotPassword(username);
 		return response;
 	}

@@ -18,4 +18,6 @@ public interface EnquiryServiceI
 
 	ResponseEntity<String> forwardToRE(int enquiryID);
 
+	List<Enquiry> getOeTasks();
+
 }

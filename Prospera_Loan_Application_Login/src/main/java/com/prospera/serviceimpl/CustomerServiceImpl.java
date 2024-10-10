@@ -20,7 +20,9 @@ import com.prospera.model.Employment;
 import com.prospera.model.LocalAddress;
 import com.prospera.model.PerAddress;
 import com.prospera.model.Sanction;
+import com.prospera.model.User;
 import com.prospera.repository.CustomerRepository;
+import com.prospera.repository.UserRepository;
 import com.prospera.servicei.CustomerServiceI;
 
 @Service
@@ -28,6 +30,9 @@ public class CustomerServiceImpl implements CustomerServiceI
 {
 	@Autowired
 	CustomerRepository cr;
+	
+	@Autowired
+	UserRepository ur;
 	
 	@Autowired
 	JavaMailSender sender;
@@ -68,10 +73,18 @@ public class CustomerServiceImpl implements CustomerServiceI
 	@Override
 	public void changePassword(String username, String password)
 	{
+		
 		Optional<Customer> o = cr.findByUsername(username);
-		Customer c = o.get();
-		c.setPassword(password);
-		cr.save(c);
+		if(!(o.isPresent()))
+		{
+			throw new CustomerLoginFailedException("Incorrect username");
+		}
+		else 
+		{
+			Customer c = o.get();
+			c.setPassword(password);
+			cr.save(c);
+		}
 	}
 
 	@Override
@@ -89,14 +102,18 @@ public class CustomerServiceImpl implements CustomerServiceI
 		}
 		
 		Optional<Customer> o  = cr.findByUsername(username);
+		Optional<User> uo = ur.findByUsername(username);
 		if(!(o.isPresent()))
 		{
 			throw new CustomerLoginFailedException("Incorrect username");
 		}
 		else
 		{
+			User u = uo.get();
 			Customer c = o.get();
+			u.setPassword(new_password);
 			c.setPassword(new_password);
+			ur.save(u);
 			cr.save(c);
 			SimpleMailMessage msg = new SimpleMailMessage();
 			msg.setTo(c.getEmail());
@@ -210,10 +227,10 @@ public class CustomerServiceImpl implements CustomerServiceI
 	public String approveSanctionDetails(String username, String password)
 	{
 		Customer c = cr.findByUsernameAndPassword(username,password);
-		c.getEnquiry().setEnquiryStatus("Sanction approved by customer");
+		c.getEnquiry().setEnquiryStatus("Forwarded to Account Head");
 		c.getEnquiry().setLoanStatus("Loan Approved");
 		cr.save(c);
-		return "Sanction approved by customer";
+		return "Sanction letter approved by customer";
 	}
 
 	

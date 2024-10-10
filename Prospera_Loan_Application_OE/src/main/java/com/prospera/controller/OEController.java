@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +16,7 @@ import com.prospera.model.Enquiry;
 import com.prospera.servicei.CustomerServiceI;
 import com.prospera.servicei.EnquiryServiceI;
 
-
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/oe")
 public class OEController
@@ -31,6 +32,14 @@ public class OEController
 	public ResponseEntity<String> calculateCibil(@PathVariable("enquiryID")int enquiryID)
 	{
 		ResponseEntity<String> response=esi.calculateCibil(enquiryID);
+		return response;
+	}
+	
+	@GetMapping("oetasks")
+	public ResponseEntity<List<Enquiry>> getOeTasks()
+	{
+		List<Enquiry> list = esi.getOeTasks();
+		ResponseEntity<List<Enquiry>> response = new ResponseEntity<>(list,HttpStatus.OK);
 		return response;
 	}
 	

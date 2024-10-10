@@ -13,7 +13,9 @@ public interface EnquiryRepository extends JpaRepository<Enquiry, Integer>
 
 //	List<Enquiry> findAllByLoanStatus(String string);
 
-	List<Enquiry> findAllByEnquiryStatus(String string);		
+	List<Enquiry> findAllByEnquiryStatus(String string);
+
+	List<Enquiry> findByEnquiryStatusIn(List<String> asList);		
 }
 
 
