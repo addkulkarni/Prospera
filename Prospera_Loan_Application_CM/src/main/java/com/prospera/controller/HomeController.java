@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,7 @@ import com.prospera.model.Sanction;
 import com.prospera.servicei.CustomerServiceI;
 import com.prospera.servicei.SanctionServiceI;
 
-
+@CrossOrigin("*")
 @RestController
 @RequestMapping("cm")
 public class HomeController
@@ -74,8 +75,8 @@ public class HomeController
 	public ResponseEntity<String> rejectsanction(@PathVariable("cid")int cid, @PathVariable("enquiryStatus") String enquiryStatus)
 	{
 		Customer c = csi.getForRejectSanction(cid);
-		csi.sanction(c,enquiryStatus);
-		ResponseEntity<String> response = new ResponseEntity<String>("Sanction process has been "+enquiryStatus,HttpStatus.OK);
+		String msg = csi.sanction(c,enquiryStatus);
+		ResponseEntity<String> response = new ResponseEntity<String>(msg,HttpStatus.OK);
 		return response;
 	}
 	

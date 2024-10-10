@@ -56,7 +56,11 @@ public class Customer
 	@OneToOne(cascade = CascadeType.ALL)
 	private Document doc;
 	
+	@OneToOne(cascade = CascadeType.ALL)
+	private Sanction sanction;
 	
+	@OneToOne(cascade = CascadeType.ALL)
+	private Disbursement disbursement;
 	
 
 }

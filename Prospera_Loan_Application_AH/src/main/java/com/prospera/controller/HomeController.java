@@ -67,7 +67,7 @@ public class HomeController
 			if(ledger.getCurrentMonthEmiStatus().equals("Unpaid"))
 			{
 				String message = csi.updateLedgerList(cid, ledger);
-				if(ledger.getRemainingAmount()<0)
+				if(ledger.getRemainingAmount()<100)
 				{
 					csi.closeLoan(cid);
 				}
@@ -107,6 +107,7 @@ public class HomeController
 		{
 			if(ledger.getCurrentMonthEmiStatus().equals("Unpaid"))
 			{
+				
 				List<Ledger> updatedLedgerList = lsi.skipEMI(ledgerId, ledgerlist,c);
 				csi.updateLedgerList(cid,updatedLedgerList);
 				ResponseEntity<String> response = new ResponseEntity<String>("Updated successfully",HttpStatus.OK);

@@ -21,6 +21,7 @@ public class Ledger
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int ledgerId;
+	private int installmentNumber;
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Temporal(TemporalType.DATE)
 	@JsonFormat(pattern="dd/MM/yyyy")

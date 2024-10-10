@@ -180,18 +180,25 @@ public class CustomerServiceImpl implements CustomerServiceI
 	}
 
 	@Override
-	public void sanction(Customer c, String enquiryStatus)
+	public String sanction(Customer c, String enquiryStatus)
 	{
 		if(enquiryStatus.equals("rejected"))
 		{
 			c.getEnquiry().setEnquiryStatus("Sanction rejected by customer");
+			cr.save(c);
+			return "Sanction rejected by customer";
 		}
 		else if(enquiryStatus.equals("approved"))
 		{
 			c.getEnquiry().setEnquiryStatus("Sanction approved by customer");
 			c.getEnquiry().setLoanStatus("Loan Approved");
+			cr.save(c);
+			return "Sanction approved by customer";
 		}
-		cr.save(c);
+		else {
+			return "Please input only 'approved' or 'rejected' values";
+		}
+		
 	}
 
 	@Override

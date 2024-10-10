@@ -118,6 +118,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 				{
 					Sanction sanction = c.getSanction();
 					Ledger l = new Ledger();
+					l.setInstallmentNumber(i);
 					l.setLedgerCreatedDate(current_date);
 					l.setTotalPrincipalAmount(sanction.getLoanamount());
 					l.setPayableAmount(sanction.getLoanamount()+(sanction.getLoanamount()*sanction.getInterestRate()/100));
