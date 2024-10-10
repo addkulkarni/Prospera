@@ -16,4 +16,11 @@ public interface CustomerServiceI {
 
 	List<Customer> getAllCustomer();
 
+	List<Customer> getByCustomerCibilscore();
+
+	List<Customer> getByCustomerAge();
+
+	
+
 }
+

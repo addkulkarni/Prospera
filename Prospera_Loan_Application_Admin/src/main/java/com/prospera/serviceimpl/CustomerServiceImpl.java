@@ -11,7 +11,9 @@ import com.prospera.exception.EmailNotFoundException;
 import com.prospera.exception.InvalidEnquiryStatusException;
 import com.prospera.exception.InvalidLoanStatusException;
 import com.prospera.model.Customer;
+import com.prospera.model.Enquiry;
 import com.prospera.repository.CustomerRepository;
+import com.prospera.repository.EnquiryRepository;
 import com.prospera.servicei.CustomerServiceI;
 @Service
 public class CustomerServiceImpl implements CustomerServiceI {
@@ -19,6 +21,7 @@ public class CustomerServiceImpl implements CustomerServiceI {
 	
 	@Autowired
 	CustomerRepository cr;
+	
 	
 	@Override
 	public ResponseEntity<List<Customer>> getByEmail(String email) {
@@ -62,9 +65,22 @@ public class CustomerServiceImpl implements CustomerServiceI {
 	}
 	@Override
 	public List<Customer> getAllCustomer() {
-		     List<Customer>l=cr.findAll();
+		List<Customer>l=cr.findAll();
 		return l;
 	}
+	@Override
+	public List<Customer> getByCustomerCibilscore() {
+		
+	    List<Customer> l=cr.findAll();
+	    return l;
+	}
+	@Override
+	public List<Customer> getByCustomerAge()
+	{
+		List<Customer> l=cr.findAll();
+		return l;
+	}
+	
 			
 		
 }

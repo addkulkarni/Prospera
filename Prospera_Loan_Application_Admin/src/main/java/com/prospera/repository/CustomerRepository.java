@@ -19,5 +19,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer>
 	List<Customer> findAllByEnquiryEmail(String email);
 
 	List<Customer> findAllByEnquiryEnquiryStatus(String enquiryStatus);
+
+//	List<Customer> findAllByEnquiryCibilCibilscore();
 	
 }
+
