@@ -43,7 +43,7 @@ public class Enquiry
 	@Pattern(regexp = "^[A-Z]{5}[0-9]{4}[A-Z]{1}$", message = "Please input a valid PAN card number")
 	private String pancardNo;
 	@NotBlank(message = "AdharCard Number cannot be empty")
-	@Pattern(regexp = "^[2-9]{1}[0-9]{3}\\s[0-9]{4}\\s[0-9]{4}$", message = "AdharCard number must have exactly 12 digits")
+	
 	private String adharcardNo;
 	@NotBlank(message = "Gender cannot be empty")
 	@Pattern(regexp = "Male|Female", message = "Allowed values are Male and Female")
