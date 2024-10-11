@@ -58,7 +58,8 @@ public class CustomerServiceImpl implements CustomerServiceI
 	@Override
 	public float calculateEMI(Customer c)
 	{
-		float emiAmount = (((c.getSanction().getLoanamount()*c.getSanction().getInterestRate())/1200)+(c.getSanction().getLoanamount()/c.getSanction().getTenure()));
+		//float emiAmount = (((c.getSanction().getLoanamount())+(c.getSanction().getInterestRate()*c.getSanction().getLoanamount()/c.getSanction().getTenure()));
+		float emiAmount = (((c.getSanction().getLoanamount())+(c.getSanction().getLoanamount()*c.getSanction().getInterestRate()/100))/c.getSanction().getTenure());
 		c.getSanction().setEmiAmount(emiAmount);
 		c.getEnquiry().setEnquiryStatus("EMI calculated");
 		cr.save(c);
