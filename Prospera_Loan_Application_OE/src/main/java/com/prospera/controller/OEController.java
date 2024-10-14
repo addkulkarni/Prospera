@@ -81,9 +81,17 @@ public class OEController
 	}
 
 	@GetMapping("/documentverification/{cid}/{loanStatus}")
-	ResponseEntity<String> getVerification(@PathVariable("cid") int cid, @PathVariable("loanStatus")String loanStatus)
+	public ResponseEntity<String> getVerification(@PathVariable("cid") int cid, @PathVariable("loanStatus")String loanStatus)
 	{
 		ResponseEntity<String> e = csi.getVerification(cid,loanStatus);
 		return e;
 	}
+	
+	@GetMapping("getCustomerDetails/{enquiryID}")
+	public ResponseEntity<Customer> getCustomerDetails(@PathVariable("enquiryID")int enquiryID)
+	{
+		Customer c = csi.getCustomerDetails(enquiryID);
+		ResponseEntity<Customer> response = new ResponseEntity<>(c,HttpStatus.OK);
+		return response;
+	} 
 }

@@ -14,4 +14,6 @@ public interface CustomerServiceI
 	ResponseEntity<String> getVerification(int cid, String loanStatus);
 
 	ResponseEntity<String> forwardToCm(int cid);
+
+	Customer getCustomerDetails(int enquiryId);
 }

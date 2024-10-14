@@ -105,6 +105,13 @@ public class CustomerServiceImpl implements CustomerServiceI
 					
 			}			
 		}
+
+	@Override
+	public Customer getCustomerDetails(int enquiryId)
+	{
+		Customer c = cr.getCustomerByEnquiryEnquiryID(enquiryId);
+		return c;
+	}
 		
 	}
 
