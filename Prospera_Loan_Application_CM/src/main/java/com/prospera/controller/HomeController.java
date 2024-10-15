@@ -43,6 +43,14 @@ public class HomeController
 		return response;
 	}
 	
+	@GetMapping("getallpendingsanctionbyLoanStatus")
+	public ResponseEntity<List<Customer>> getallpendingsanctionbyLoanStatus()
+	{
+		List<Customer> l = csi.getallpendingsanctionbyLoanStatus();
+		ResponseEntity<List<Customer>> response = new ResponseEntity<List<Customer>>(l,HttpStatus.OK);
+		return response;
+	}
+	
 	@PostMapping("setloandetails/{cid}")
 	public ResponseEntity<Sanction> setLoanDetails(@PathVariable("cid")int cid, @RequestBody Sanction s)
 	{
@@ -52,12 +60,12 @@ public class HomeController
 		return response;
 	}
 	
-	@PostMapping("calculateEMI/{cid}")
-	public ResponseEntity<String> calculateEMI(@PathVariable("cid")int cid)
+	@GetMapping("calculateEMI/{cid}")
+	public ResponseEntity<Double> calculateEMI(@PathVariable("cid")int cid)
 	{
 		Customer c = csi.getCustomerforEMI(cid);
 		double emiAmount = csi.calculateEMI(c);
-		ResponseEntity<String> response = new ResponseEntity<String>("EMI amount will be "+emiAmount,HttpStatus.OK);
+		ResponseEntity<Double> response = new ResponseEntity<>(emiAmount,HttpStatus.OK);
 		return response;
 	}
 	

@@ -32,4 +32,6 @@ public interface CustomerServiceI
 
 	byte[] generateSanctionLetter(int cid);
 
+	List<Customer> getallpendingsanctionbyLoanStatus();
+
 }

@@ -56,6 +56,11 @@ public class CustomerServiceImpl implements CustomerServiceI
 	}
 
 	@Override
+	public List<Customer> getallpendingsanctionbyLoanStatus() {
+		List<Customer> l = cr.findAllByEnquiryLoanStatus("Verification Approved");
+		return l;
+	}
+	@Override
 	public float calculateEMI(Customer c)
 	{
 		//float emiAmount = (((c.getSanction().getLoanamount())+(c.getSanction().getInterestRate()*c.getSanction().getLoanamount()/c.getSanction().getTenure()));
@@ -397,4 +402,6 @@ public class CustomerServiceImpl implements CustomerServiceI
 			}
 		}
 	}
+
+	
 }
