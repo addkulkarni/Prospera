@@ -1,4 +1,4 @@
-           package com.prospera.serviceimpl;
+package com.prospera.serviceimpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +45,21 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 		List<Enquiry> l= er.findByEnquiryStatus("Pending Registration"); 
 		ResponseEntity<List<Enquiry>> response=new ResponseEntity<>(l,HttpStatus.OK);
 		return response;
+	}
+
+	@Override
+	public ResponseEntity<Enquiry> getEnquiryById(int enquiryID)
+	{
+		Optional<Enquiry> o = er.findById(enquiryID);
+		if(o.isPresent())
+		{
+			ResponseEntity<Enquiry> response = new ResponseEntity<>(o.get(),HttpStatus.OK);
+			return response;
+		}
+		else
+		{
+			throw new InvalidEnquiryIDException("Enquiry not found");
+		}
 	}
 
 }

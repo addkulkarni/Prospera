@@ -101,4 +101,10 @@ public class HomeController
 		ResponseEntity<List<Customer>> response=csi.getAllRegistrationComplete();
 		return response;
 	}
+	@GetMapping("getenquirybyid/{enquiryID}")
+	public ResponseEntity<Enquiry> getById(@PathVariable("enquiryID")int enquiryID)
+	{
+		ResponseEntity<Enquiry> response=esi.getEnquiryById(enquiryID);
+		return response;
+	}
 }	
