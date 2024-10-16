@@ -48,8 +48,15 @@ public class HomeController
 		ResponseEntity<String> response = new ResponseEntity<String>("Amount of Rs. "+amount+" has been disbursed to the bank account",HttpStatus.OK);
 		return response;
 	}
+	@GetMapping("getLedger/{cid}")
+	public ResponseEntity<List<Ledger>> getLedger(@PathVariable("cid")int cid)
+	{
+		List<Ledger> list = csi.getLedgerList(cid);
+		ResponseEntity<List<Ledger>> response = new ResponseEntity<>(list,HttpStatus.OK);
+		return response;
+	}
 	
-	@PostMapping("createledger/{cid}")
+	@GetMapping("createledger/{cid}")
 	public ResponseEntity<String> createLedger(@PathVariable("cid")int cid)
 	{
 		csi.createLedger(cid);
@@ -137,7 +144,7 @@ public class HomeController
 		return response;
 	}
 	
-	@PostMapping("disbursementaccount/{cid}/{disbursementAccountNo}")
+	@GetMapping("disbursementaccount/{cid}/{disbursementAccountNo}")
 	public ResponseEntity<String> addDisbursementAccount(@PathVariable("cid")int cid, @PathVariable("disbursementAccountNo")int disbursementAccountNo)
 	{
 		Customer c = csi.getCustomer(cid);
