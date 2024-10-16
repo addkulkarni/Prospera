@@ -52,6 +52,10 @@ public class CustomerServiceImpl implements CustomerServiceI
 	public List<Customer> getAllPendingSanction()
 	{
 		List<Customer> l = cr.findAllByEnquiryEnquiryStatusAndEnquiryLoanStatus("Pending Sanction","Verification Approved");
+		List<Customer> l1 = cr.findAllByEnquiryEnquiryStatus("Sanction Process In Progress");
+		List<Customer> l2 = cr.findAllByEnquiryEnquiryStatus("EMI calculated");
+		l.addAll(l1);
+		l.addAll(l2);
 		return l;
 	}
 
