@@ -58,8 +58,13 @@ public class CustomerServiceImpl implements CustomerServiceI
 	public List<Customer> getAllForwaredtoAH()
 	{
 		List<Customer>c = cr.findAllByEnquiryEnquiryStatus("Forwarded to Account Head");
+		List<Customer>c1 = cr.findAllByEnquiryEnquiryStatus("Loan Disbursed");
+		List<Customer>c2 = cr.findAllByEnquiryEnquiryStatus("Ledger Created");
+		c.addAll(c1);
+		c.addAll(c2);
 		return c;
 	}
+	
 
 	@Override
 	public float disburseLoanAmount(int cid) throws MessagingException
@@ -137,6 +142,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 					l.setLoanStatus("Ongoing");
 					ledgerList.add(l);
 					c.setLedger(ledgerList);
+					c.getEnquiry().setEnquiryStatus("Ledger Created");
 					cr.save(c);
 				}
 			}
