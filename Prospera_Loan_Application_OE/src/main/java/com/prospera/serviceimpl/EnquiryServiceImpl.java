@@ -47,7 +47,7 @@ public class EnquiryServiceImpl implements EnquiryServiceI
 		else
 		{
 			Random random=new Random();
-			int max=900,min=300;
+			int max=900,min=651;
 			int randomnum=random.nextInt(min,max);
 			 Cibil c=new Cibil();
 			c.setCibilscore(randomnum);

@@ -2,6 +2,9 @@ package com.prospera.model;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,8 +12,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @Entity
 public class Enquiry
 {
@@ -31,5 +36,11 @@ public class Enquiry
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	private Cibil cibil;
+
+	@JsonCreator
+	public Enquiry(@JsonProperty("enquiryID") int enquiryID)
+	{
+		this.enquiryID = enquiryID;
+	}
 	
 }
