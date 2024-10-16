@@ -15,4 +15,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer>
 
 	List<Customer> findAllByEnquiryLoanStatus(String string);
 
+
+	List<Customer> findAllByEnquiryEnquiryStatus(String string);
+
+
 }
