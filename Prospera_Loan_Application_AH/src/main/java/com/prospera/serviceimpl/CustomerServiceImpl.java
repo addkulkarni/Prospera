@@ -476,6 +476,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 			l.setLoanStatus("Closed");
 		}
 		c.setLedger(ledgerList);
+		c.getEnquiry().setEnquiryStatus("Loan Closed");
 		SimpleMailMessage msg = new SimpleMailMessage();
 		msg.setTo(c.getEmail());
 		msg.setSubject("Loan closing update");
