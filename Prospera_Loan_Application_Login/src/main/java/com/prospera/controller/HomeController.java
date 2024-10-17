@@ -22,6 +22,7 @@ import com.prospera.model.Document;
 import com.prospera.model.Employment;
 import com.prospera.model.Enquiry;
 import com.prospera.model.Sanction;
+import com.prospera.model.User;
 import com.prospera.servicei.CustomerServiceI;
 import com.prospera.servicei.UserServiceI;
 @CrossOrigin("*")
@@ -40,6 +41,20 @@ public class HomeController
 		Customer c = csi.checkCredentials(username, password);
 		ResponseEntity<Customer> response = new ResponseEntity<Customer>(c,HttpStatus.OK);
 		return response;
+	}
+	
+	@GetMapping("loginUser/{username}/{password}")
+	public ResponseEntity<User> loginUser(@PathVariable("username")String username, @PathVariable("password")String password)
+	{
+		User u = usi.checkdetails(username, password);
+		if(u!=null) {
+			ResponseEntity<User> response = new ResponseEntity<User>(u,HttpStatus.OK);
+			return response;
+		}
+		else {
+			return new ResponseEntity<User>(u, HttpStatus.NOT_FOUND);
+		}
+
 	}
 	
 	@GetMapping("changepassword/{username}/{password}")
