@@ -37,10 +37,10 @@ public class Enquiry
 	@OneToOne(cascade = CascadeType.ALL)
 	private Cibil cibil;
 
-	@JsonCreator
-	public Enquiry(@JsonProperty("enquiryID") int enquiryID)
-	{
-		this.enquiryID = enquiryID;
-	}
+//	@JsonCreator
+//	public Enquiry(@JsonProperty("enquiryID") int enquiryID)
+//	{
+//		this.enquiryID = enquiryID;
+//	}
 	
 }

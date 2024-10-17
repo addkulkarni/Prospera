@@ -93,7 +93,7 @@ public class LedgerServiceImpl implements LedgerServiceI
 				{
 					SimpleMailMessage message1=new SimpleMailMessage();
 				    message1.setTo(c.getEmail());
-				    message1.setSubject("Important Notice: Account Marked as Defaulter Due to Missed EMIs");
+				    message1.setSubject("Important Notice: Account Marked as defaulter due to Missed EMIs");
 				    message1.setText("\n We regret to inform you that, due to the non-payment of three consecutive EMIs, your account has been marked as a defaulter");
 					sender.send(message1);
 					for(Ledger led:ledger)

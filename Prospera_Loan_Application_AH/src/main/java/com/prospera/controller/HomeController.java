@@ -75,7 +75,7 @@ public class HomeController
 			if(ledger.getCurrentMonthEmiStatus().equals("Unpaid"))
 			{
 				String message = csi.updateLedgerList(cid, ledger);
-				if(ledger.getRemainingAmount()<100)
+				if(ledger.getInstallmentNumber()==ledger.getTenure())
 				{
 					csi.closeLoan(cid);
 				}
