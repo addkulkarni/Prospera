@@ -232,7 +232,7 @@ public class CustomerServiceImpl implements CustomerServiceI
 	
 					String content1 = "\n\n Dear " + cd1.getFirstName()
 						+ ","
-						+ "\nProspera Finance Ltd. is Happy to informed you that your loan application has been approved. ";
+						+ "\nProspera Finance Ltd. is happy to inform you that your loan application has been approved. ";
 	
 					String content2 = "\n\nWe hope that you find the terms and conditions of this loan satisfactory "
 						+ "and that it will help you meet your financial needs.\n\nIf you have any questions or need any assistance regarding your loan, "
